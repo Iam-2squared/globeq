@@ -1,4 +1,4 @@
-name: One-time daily content retry
+name: One-time daily content retry 2
 on:
   push:
     branches: [main]
