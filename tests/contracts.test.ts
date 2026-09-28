@@ -90,3 +90,21 @@ describe('Japan news freshness window',()=>{
     expect(validatePublishRows(Array.from({length:20},(_,i)=>({...row('2026-09-24T23:59:59+09:00'),id:'q'+i,event_key:'e'+i,source_url:'https://source.example/'+i})),'2026-09-28').some(x=>x.includes('outside reviewed news window'))).toBe(true);
   });
 });
+
+
+describe('replay and public ranking boundary',()=>{
+  it('keeps internal editor accounts out of ranking SQL',()=>{
+    for(const kind of ['streak','weekly','all-time'] as const){
+      const q=rankingQueries(kind,'00000000-0000-0000-0000-000000000001','2026-09-28','2026-09-28');
+      expect(q.top.text).toContain("u.role='member'");
+    }
+  });
+  it('implements replay as an explicit non-competitive answer path',()=>{
+    const route=require('node:fs').readFileSync('src/app/api/answers/route.ts','utf8');
+    expect(route).toContain('replay: z.boolean()');
+    expect(route).toContain('false as eligible');
+    const player=require('node:fs').readFileSync('src/components/quiz-player.tsx','utf8');
+    expect(player).toContain('もう一度20問を解く');
+    expect(player).toContain('ランキング・正解率・Streakには影響しません');
+  });
+});
