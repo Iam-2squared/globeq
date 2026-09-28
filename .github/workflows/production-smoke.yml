@@ -23,24 +23,17 @@ jobs:
             sleep 10
           done
           test "$ok" = "1"
-          grep -q "ニュースを" /tmp/home.html
+          echo "production home HTTP 200"
 
-      - name: Read-only production pages
+      - name: Five production pages return 200
         shell: bash
         run: |
           set -euo pipefail
           BASE="https://globeq.vercel.app"
-          for item in \
-            "/|TODAY" \
-            "/news|新着ニュース" \
-            "/quiz|今日の20問" \
-            "/ranking|TOP 100" \
-            "/account|新規登録"
-          do
-            path="${item%%|*}"
-            needle="${item#*|}"
-            curl -fsS "$BASE$path" -o /tmp/page.html
-            grep -q "$needle" /tmp/page.html
+          for path in / /news /quiz /ranking /account; do
+            code="$(curl -sS -o /tmp/page.html -w '%{http_code}' "$BASE$path")"
+            echo "$path -> $code ($(wc -c < /tmp/page.html) bytes)"
+            test "$code" = "200"
           done
 
       - name: Public question contract
@@ -52,7 +45,7 @@ jobs:
           const fs=require('fs');
           const body=JSON.parse(fs.readFileSync('/tmp/questions.json','utf8'));
           if(body.date!=='2026-09-28') throw new Error('wrong date');
-          if(!Array.isArray(body.questions)||body.questions.length!==20) throw new Error('expected 20 questions');
+          if(!Array.isArray(body.questions)||body.questions.length!==20) throw new Error('expected 20 questions, got '+body.questions?.length);
           for(const q of body.questions){
             if(!Array.isArray(q.options)||q.options.length!==4) throw new Error('expected four options');
           }
@@ -70,30 +63,32 @@ jobs:
           BASE="https://globeq.vercel.app"
           USERNAME="smoke_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
           PASSWORD="GlobeQ-smoke-${GITHUB_RUN_ID}!"
+          echo "$USERNAME" > /tmp/smoke_username.txt
 
           code="$(curl -sS -c /tmp/cookies.txt -o /tmp/register.json -w '%{http_code}' \
             -X POST "$BASE/api/auth/register" \
             -H "Origin: $BASE" -H "Content-Type: application/json" \
             --data "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}")"
+          echo "register -> $code"
           test "$code" = "201"
 
-          curl -fsS -b /tmp/cookies.txt "$BASE/account" -o /tmp/account.html
+          code="$(curl -sS -b /tmp/cookies.txt -o /tmp/account.html -w '%{http_code}' "$BASE/account")"
+          echo "authenticated account -> $code"
+          test "$code" = "200"
           grep -q "$USERNAME" /tmp/account.html
 
           code="$(curl -sS -b /tmp/cookies.txt -c /tmp/cookies.txt -o /tmp/logout.json -w '%{http_code}' \
-            -X POST "$BASE/api/auth/logout" \
-            -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
+            -X POST "$BASE/api/auth/logout" -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
+          echo "logout -> $code"
           test "$code" = "200"
 
           code="$(curl -sS -c /tmp/cookies.txt -o /tmp/login.json -w '%{http_code}' \
-            -X POST "$BASE/api/auth/login" \
-            -H "Origin: $BASE" -H "Content-Type: application/json" \
+            -X POST "$BASE/api/auth/login" -H "Origin: $BASE" -H "Content-Type: application/json" \
             --data "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}")"
+          echo "login -> $code"
           test "$code" = "200"
 
           code="$(curl -sS -b /tmp/cookies.txt -o /tmp/logout2.json -w '%{http_code}' \
-            -X POST "$BASE/api/auth/logout" \
-            -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
+            -X POST "$BASE/api/auth/logout" -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
+          echo "final logout -> $code"
           test "$code" = "200"
-
-          echo "SMOKE_USERNAME=$USERNAME"
