@@ -230,3 +230,32 @@ No publication state was changed. The next gate remains an explicit formal edito
 | Remaining before public release | Merge/deploy production, verify real HTTP auth + 20-question answer flow on public host, inspect all five tabs with live DB, final smoke and status freeze |
 
 Japan V1 is **CONTENT READY / RELEASE NOT YET EXECUTED**.
+
+
+## 2026-09-28 20:52 JST — Japan V1 production release / OFFICIAL PASS
+
+| Field | State |
+| --- | --- |
+| Production origin | `https://globeq.vercel.app` |
+| GitHub | PR #1 merged to `main`; production application deployed through Vercel |
+| Japan content | **20 / 20** formally reviewed and published; **80** answer options |
+| Official sources | MLIT / MOE / MAFF / FSA / MOFA manual-source pilots; source URLs and attribution retained |
+| Public question contract | Production API returns **20 questions × 4 options** and exposes **no correct-answer flag, explanation or source URL before answering** |
+| Public pages | Home / News / Quiz / Ranking / Account = **5 / 5 HTTP 200** |
+| Production auth smoke | Register **201** → authenticated Account **200** → logout **200** → login **200** → logout **200** |
+| Auth smoke cleanup | Smoke accounts removed; current `smoke_%` users = **0** |
+| Real production answers | Snapshot: **20 answers / 1 member / 1 completed day / 1 active streak**; all 20 persisted answers have valid explanation + HTTPS source material available for post-answer reveal |
+| Live DB transaction | Separate rollback-only 20-answer test PASS: total=20, Hard=6, streak=1, completion and badges; no test residue |
+| Production migrations | **4 / 4** applied: initial schema, content integrity, answer correction lock, security hardening |
+| Security | Supabase Security Advisor = **0 lints**; anon/authenticated cannot use private `globeq` schema or execute private answer RPC |
+| CI | Japan V1 checks PASS on production `main` |
+| Production smoke | Run #36417216794 PASS for five pages, 20-question public contract and register/login/logout flow; later automatic read-only smoke runs also PASS |
+| Production visual | Run #36418095966 PASS at 390×844; five production pages captured with live DB; clean ranking re-captured after smoke-account cleanup |
+| Physical mobile | User iPhone Safari evidence: five-tab navigation and responsive layout confirmed |
+| Practice / ARK | Untouched |
+
+### Release decision
+
+**GlobeQ Japan V1 — OFFICIAL PASS / LIVE.**
+
+The release gate is closed for the Japan V1 application itself. The remaining work is operational growth, not a blocker for this release: automate candidate collection only from approved sources, use OpenAI for private draft generation, keep human fact/rights/neutrality review mandatory, and sustain at least 20 published Japan questions per Tokyo day. World and Points remain deferred.
