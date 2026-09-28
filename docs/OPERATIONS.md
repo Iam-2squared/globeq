@@ -6,6 +6,17 @@
 2. Configure a PostgreSQL database. Supabase production deployment uses the timestamped files in `supabase/migrations/`. For isolated/local or explicitly managed databases, `DATABASE_URL=… npm run db:migrate` reads the same directory. **Never use both deployment paths against the same production database.** Keep `globeq` off Supabase Data API. The migrations create no real content or editor.
 3. Register an ordinary operator username, then have a database administrator deliberately change that user's `globeq.users.role` to `editor` through a private database connection. Set `EDITOR_USER_ID` to its UUID in the operator environment. Do not add a public role-upgrade API.
 
+## AI-assisted private draft generation
+
+OpenAI may prepare **private candidates only** from concise facts that an editor has already extracted from an approved source. Never send an article body merely because a URL is public. The generator uses the Responses API with strict Structured Outputs; its result still enters the existing Draft → human Review → Publish gate and cannot publish by itself.
+
+```sh
+OPENAI_API_KEY='server-only-secret' npm run content:draft -- --file path/to/verified-source-facts.json --out path/to/private-drafts.json
+DATABASE_URL='postgresql://…' EDITOR_USER_ID='uuid' npm run content:import -- --file path/to/private-drafts.json
+```
+
+`fixtures/verified-source-facts.example.json` documents the input shape only; `example.test` is not a production source. Model output is not factual or licensing evidence. The human reviewer must reopen the source and independently verify the correct option, summary, rights, link and neutrality before review/publish.
+
 ## Draft package and review
 
 Prepare a UTF-8 JSON file (never copy an article body):

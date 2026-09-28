@@ -4,6 +4,7 @@ import { japanDate, mondayOf, calendarDays, validQuizDate } from '../src/lib/tim
 import { rankingQueries } from '../src/lib/ranking-queries';
 import { validatePublishRows } from '../scripts/content-rules.mjs';
 import { canonicalArticleUrl,normalizeCandidate } from '../scripts/article-normalization.mjs';
+import { validateGeneratedDraft } from '../scripts/openai-draft.mjs';
 
 describe('public contract', () => {
   it('allows only question fields and never serializes the answer or explanation', () => {
@@ -57,5 +58,15 @@ describe('editorial gate', () => {
     rows[1]={...rows[1],correct_count:2,rights_checked:false,event_key:rows[0].event_key};
     const issues = validatePublishRows(rows,'2026-09-28');
     expect(issues.join(' ')).toMatch(/exactly one correct|source, rights|duplicate event/);
+  });
+});
+
+
+describe('AI draft boundary',()=>{
+  it('accepts a structured private draft but rejects ambiguous answer keys',()=>{
+    const source={title:'Official verified update',sourceName:'Official source',sourceUrl:'https://source.example/item',publishedAt:'2026-09-28T10:00:00+09:00',category:'社会',tags:['制度'],eventKey:'official-event',facts:['The verified source directly states the factual answer used by the editor.']};
+    const generated={summary:'GlobeQ独自の短い要約として確認用に作成した文章です。',prompt:'確認済み資料で示された事実として正しいものはどれですか？',explanation:'確認済みの一次資料に基づく事実を簡潔に説明した文章です。',difficulty:'normal',options:[{label:'選択肢A',correct:true},{label:'選択肢B',correct:false},{label:'選択肢C',correct:false},{label:'選択肢D',correct:false}]};
+    expect(validateGeneratedDraft(source,generated).question.options).toHaveLength(4);
+    expect(()=>validateGeneratedDraft(source,{...generated,options:generated.options.map(o=>({...o,correct:true}))})).toThrow(/exactly one correct/);
   });
 });

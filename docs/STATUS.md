@@ -102,3 +102,18 @@ No user data, production service, paid plan, Practice/ARK repository or Practice
 | Next | Verify CI, then retry Supabase GitHub integration with repository `Iam-2squared/globeq` and working directory `.`. Keep production deployment disabled until the first live migration is deliberately approved |
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 19:30 JST — OpenAI private-draft integration
+
+| Field | State |
+| --- | --- |
+| Purpose | Add server-only OpenAI-assisted generation for private Japan quiz candidates without weakening the existing human Review/Publish gate |
+| API | OpenAI Responses API + strict Structured Outputs; default draft model `gpt-5-mini`, overrideable by `OPENAI_DRAFT_MODEL` |
+| Input boundary | Approved-source metadata plus concise editor-verified facts only; no automatic article-body ingestion |
+| Output boundary | Original short summary, one factual 4-choice question, one correct answer, explanation and difficulty; output remains private draft data |
+| Safety | No auto-publish, no source-rights attestation by AI, no political evaluation; existing per-question human rights/fact/neutrality review remains mandatory |
+| Secrets | `OPENAI_API_KEY` is server-only and not committed; production key is configured outside GitHub |
+| Production writes | None from this commit; no live OpenAI request and no news import performed |
+
+Japan V1 remains **NOT RELEASED**.

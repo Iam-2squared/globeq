@@ -13,7 +13,8 @@
     "content:import": "node scripts/content.mjs import",
     "content:review": "node scripts/content.mjs review",
     "content:publish": "node scripts/content.mjs publish",
-    "content:withdraw": "node scripts/content.mjs withdraw"
+    "content:withdraw": "node scripts/content.mjs withdraw",
+    "content:draft": "node scripts/openai-draft-cli.mjs"
   },
   "dependencies": {
     "@node-rs/argon2": "2.2.1",
