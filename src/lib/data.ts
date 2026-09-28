@@ -50,14 +50,13 @@ export async function answersForDay(userId: string, date: string): Promise<Answe
 
 export async function newsSearch(query = '', before?: string) {
   const pattern = `%${query.replace(/[\\%_]/g, '\\$&')}%`;
-  const sql = db();
-  const rows = await sql`
+  const rows = await db()`
     select n.id,n.title,n.summary,n.source_name as "sourceName",n.source_url as "sourceUrl",
       n.published_at as "publishedAt",n.category,n.tags
     from globeq.news_articles n
     where n.region='japan' and n.state='published'
-      and (${!query} or n.title ilike ${pattern} escape '\' or n.summary ilike ${pattern} escape '\'
-        or array_to_string(n.tags,' ') ilike ${pattern} escape '\')
+      and (${!query} or n.title ilike ${pattern} escape '\\' or n.summary ilike ${pattern} escape '\\'
+        or array_to_string(n.tags,' ') ilike ${pattern} escape '\\')
       and (${!before} or n.published_at < ${before ?? '9999-12-31T00:00:00Z'})
     order by n.published_at desc,n.id desc limit 40`;
   return rows as unknown as Array<{
@@ -93,19 +92,23 @@ export async function homeData(userId: string | null, today = japanDate(), month
 
 export async function accountData(userId: string, today = japanDate()) {
   const monday = mondayOf(today);
-  const [row] = await db()`
-    select u.username,s.total_answers as "totalAnswers",s.correct_answers as "correctAnswers",
-      s.correct_answers as "allTimeHard",s.streak_longest as "longestStreak",
-      case when s.last_completed_day >= ${today}::date-1 then s.streak_current else 0 end as "currentStreak",
-      coalesce(w.first_correct,0) as "weeklyHard",b.id as "selectedBadgeId",b.title as "selectedBadge"
-    from globeq.users u join globeq.user_scores s on s.user_id=u.id
-    left join globeq.user_weekly_scores w on w.user_id=u.id and w.monday=${monday}
-    left join globeq.selected_badges chosen on chosen.user_id=u.id
-    left join globeq.badges b on b.id=chosen.badge_id
-    where u.id=${userId}`;
-  const badges = await db()`
-    select b.id,b.title,b.description,ub.earned_at as "earnedAt" from globeq.user_badges ub
-    join globeq.badges b on b.id=ub.badge_id where ub.user_id=${userId} order by ub.earned_at,b.id`;
+  const sql = db();
+  const [rows, badges] = await Promise.all([
+    sql`
+      select u.username,s.total_answers as "totalAnswers",s.correct_answers as "correctAnswers",
+        s.correct_answers as "allTimeHard",s.streak_longest as "longestStreak",
+        case when s.last_completed_day >= ${today}::date-1 then s.streak_current else 0 end as "currentStreak",
+        coalesce(w.first_correct,0) as "weeklyHard",b.id as "selectedBadgeId",b.title as "selectedBadge"
+      from globeq.users u join globeq.user_scores s on s.user_id=u.id
+      left join globeq.user_weekly_scores w on w.user_id=u.id and w.monday=${monday}
+      left join globeq.selected_badges chosen on chosen.user_id=u.id
+      left join globeq.badges b on b.id=chosen.badge_id
+      where u.id=${userId}`,
+    sql`
+      select b.id,b.title,b.description,ub.earned_at as "earnedAt" from globeq.user_badges ub
+      join globeq.badges b on b.id=ub.badge_id where ub.user_id=${userId} order by ub.earned_at,b.id`,
+  ]);
+  const row = rows[0];
   type Stats = {
     username: string; totalAnswers: number; correctAnswers: number; allTimeHard: number;
     longestStreak: number; currentStreak: number; weeklyHard: number;
@@ -119,17 +122,18 @@ export async function ranking(kind: RankingKind, userId: string | null, today = 
   const sql = db();
   const monday = mondayOf(today);
   const queries = rankingQueries(kind,userId,today,monday);
-  const positive = await sql.unsafe(queries.top.text,queries.top.params);
+  const ownPromise = queries.own ? sql.unsafe(queries.own.text,queries.own.params) : Promise.resolve([]);
+  const [positive, ownRows] = await Promise.all([
+    sql.unsafe(queries.top.text,queries.top.params),
+    ownPromise,
+  ]);
   const zero = queries.zero && positive.length < 100 ? queries.zero(100 - positive.length) : null;
   const rows = zero ? [...positive,...await sql.unsafe(zero.text,zero.params)] : positive;
   const top = rows.map((row, index) => ({
     id: String(row.id), username: String(row.username), badge: row.badge as string | null,
     score: Number(row.score), rank: 1 + rows.slice(0, index).filter((previous) => Number(previous.score) > Number(row.score)).length,
   }));
-  let own: { rank: number; score: number } | null = null;
-  if (queries.own) {
-    const [record] = await sql.unsafe(queries.own.text,queries.own.params);
-    if (record) own = { rank: Number(record.rank), score: Number(record.score) };
-  }
+  const record = ownRows[0];
+  const own = record ? { rank: Number(record.rank), score: Number(record.score) } : null;
   return { top, own };
 }
