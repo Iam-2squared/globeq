@@ -1,6 +1,6 @@
 # Japan V1 release audit — 2026-09-28
 
-**Decision: NOT RELEASED.** This audit separates isolated implementation evidence from the required live Japan service. Do not mark the PR ready or announce V1 until every production gate passes.
+**Decision: CONTENT READY / NOT YET PUBLICLY RELEASED.** This audit separates isolated implementation evidence from the required live Japan service. Do not mark the PR ready or announce V1 until every production gate passes.
 
 | Gate | Local / isolated evidence | Production gate |
 | --- | --- | --- |
@@ -25,3 +25,15 @@ The synthetic fixture uses `example.test`; it must never be inserted into a live
 2. Provide or provision an authorized **GlobeQ-specific** PostgreSQL and Vercel project within an approved free tier, then apply all three migrations without test fixtures. Record database ownership, backup and deployment configuration. Never repurpose another product's project or make a paid-plan change without explicit authorization.
 3. Verify mobile and desktop viewports using a working browser environment and fixture accounts. Exercise all five tabs, answer/retry/report, badge selection, calendar and every ranking; fix any layout or access issue.
 4. After live editorial review and deployment, run a public read-only smoke test for pages, question answer concealment and original links. Use temporary isolated test accounts for any write-path smoke. Record resulting evidence in `STATUS.md`, then decide whether V1 can be released.
+
+
+## 2026-09-28 production-prep evidence
+
+- 20 distinct real-source Japan questions were formally approved by the product owner and independently rechecked against the linked official government source pages.
+- Production DB contains 20 formal review records and passed the transactional publication gate with zero gate issues.
+- The Japan 2026-09-28 dataset is in DB `published` state, but is **not externally released** because the application feature branch has not been merged into production.
+- A rollback-only live PostgreSQL test answered all 20 using the real `submit_answer` function and verified total/correct scores, 6 Hard answers, daily completion, streak and badges. The transaction was rolled back, leaving zero test answers/users.
+- Security hardening migration is applied and the Supabase Security Advisor currently reports zero security lints.
+- Remaining release evidence is deployment-specific: production merge/deploy, public HTTP smoke, real registration/login/answer/source reveal on the deployed host, and live-browser verification with the production DB.
+
+Do not call Japan V1 OFFICIAL PASS until those deployment-specific checks pass.

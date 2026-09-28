@@ -211,3 +211,22 @@ Japan V1 remains **NOT RELEASED**.
 | User answers | **0** |
 
 No publication state was changed. The next gate remains an explicit formal editor approval of each item's fact, answer key, explanation, item-level rights/attribution and neutrality.
+
+
+## 2026-09-28 20:35 JST — formal 20/20 review and publish-gate checkpoint
+
+| Field | State |
+| --- | --- |
+| Owner approval | Explicit: **20/20 formally approved; proceed to publication preparation** |
+| Official-source recheck | The 20 factual prompts/answers were rechecked against current official MLIT / MOE / MAFF / FSA / MOFA pages before formal review |
+| Formal review rows | **20 / 20** with rights + neutrality checked |
+| Publish gate | **PASS**: 20 reviewed, 4 distinct choices, exactly one correct answer, HTTPS source, no duplicate event key, freshness window valid |
+| DB content state | Japan 2026-09-28 day = `published`; questions **20**, articles **20** |
+| External public release | **Not yet**. `main` is not merged and Vercel production still points at bootstrap `main` |
+| Live DB answer transaction | **PASS in rollback-only test**: 20/20 correct answers -> total=20, Hard=6, streak=1, completion + first-answer/first-perfect badges; transaction rolled back |
+| Persistent test residue | **0** rollback test users, **0** user answers; only internal non-login `SOLUYRA Editorial` reviewer principal remains |
+| Security | Production security migration 4/4 applied; Supabase Security Advisor **0 lints**; anon/authenticated schema usage and private answer RPC execution remain false |
+| Preview / CI | iPhone 5-tab visual evidence PASS; feature Preview Ready; latest code CI green before this documentation checkpoint |
+| Remaining before public release | Merge/deploy production, verify real HTTP auth + 20-question answer flow on public host, inspect all five tabs with live DB, final smoke and status freeze |
+
+Japan V1 is **CONTENT READY / RELEASE NOT YET EXECUTED**.
