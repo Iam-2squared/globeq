@@ -36,3 +36,21 @@ No external news fetch, paid service, migration or production write occurred dur
 | Migration / deployment | File `0001_japan_v1.sql` locally verified with PGlite; no remote migration / no deployment |
 
 This entry records a work checkpoint, not a Japan V1 release.
+
+## 2026-09-28 17:40 JST — isolated end-to-end checkpoint
+
+| Field | State |
+| --- | --- |
+| Branch / remote HEAD | `feature/japan-v1` / `961dea4752c9c2be55585b99c8b87fa5d5288fd0` before this checkpoint commit |
+| PR | [Draft #1](https://github.com/Iam-2squared/globeq/pull/1); kept Draft |
+| CI | First run: **failure** at `npm test` because that checkpoint preceded the test files; next run pending after this commit |
+| Completed | Operator import/review/publish/withdraw workflow; 20-question publish gate; DB answer immutability trigger; local five-tab app, auth, News, Quiz, Home, Ranking and badges |
+| Local verification | 10/10 unit/integration tests PASS; Next typecheck PASS; build PASS; isolated HTTP E2E PASS (migration, 20 synthetic questions, 20 answers, retry, source reveal, News search, ranking, Account, CSRF, Argon2id) |
+| Fixture / ranking / routes | 20 synthetic questions/day; 100 TOP rows plus outside-user rank tested; 5/5 local HTTP routes 200 |
+| Mobile viewports | 0 browser viewports verified; Chrome binary absent and its download CDN inaccessible in this workspace |
+| DB | 18 app tables applied in PGLite; migration runner also applied the tracking table in isolated socket E2E; no Supabase production migration |
+| Deployment | None. No GlobeQ-specific database or Vercel project identified; Practice DB untouched |
+| Blockers | Approved live news source and 20 reviewed real questions/day absent; production DB/deployment absent; visual browser and public smoke not verified |
+| Next | Push checkpoint and reach green CI; review indexed ranking scaling and security; complete mobile visual, live editorial content, private DB provisioning and deployment before release |
+
+All fixture accounts/news were in memory and were removed after the test. The release gate remains **NOT PASSED**.

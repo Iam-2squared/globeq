@@ -1,10 +1,9 @@
 import { db } from './db';
 import { japanDate, mondayOf } from './time';
+import { rankingQueries } from './ranking-queries';
+import { publicQuestion, type PublicQuestion } from './public-question';
 
-export type PublicQuestion = {
-  id: string; prompt: string; difficulty: 'easy' | 'normal' | 'hard'; position: number;
-  options: { id: string; label: string; position: number }[];
-};
+export type { PublicQuestion } from './public-question';
 export type AnswerResult = {
   questionId: string; optionId: string; correctOptionId: string; correct: boolean;
   eligible: boolean; explanation: string; sourceName: string; sourceUrl: string;
@@ -19,7 +18,7 @@ export async function publishedQuestions(date: string): Promise<PublicQuestion[]
     join globeq.answer_options o on o.question_id=q.id
     where d.region='japan' and d.local_date=${date} and d.status='published' and q.status='published'
     group by q.id order by q.position`;
-  return rows as unknown as PublicQuestion[];
+  return rows.map(row => publicQuestion(row)) as PublicQuestion[];
 }
 
 export async function answerDetails(userId: string, questionId: string): Promise<AnswerResult | null> {
@@ -119,29 +118,15 @@ export type RankingKind = 'streak' | 'weekly' | 'all-time';
 export async function ranking(kind: RankingKind, userId: string | null, today = japanDate()) {
   const sql = db();
   const monday = mondayOf(today);
-  // User-supplied `kind` is never interpolated as SQL syntax; all variants are bound values.
-  const scoreQuery = sql`
-    select u.id,u.username,u.username_key,
-      b.title as badge,
-      case when ${kind}='streak' then
-        case when s.last_completed_day >= ${today}::date-1 then s.streak_current else 0 end
-      when ${kind}='weekly' then coalesce(w.hard_correct,0)
-      else s.all_time_hard end as score
-    from globeq.users u join globeq.user_scores s on s.user_id=u.id
-    left join globeq.user_weekly_scores w on w.user_id=u.id and w.monday=${monday}
-    left join globeq.selected_badges chosen on chosen.user_id=u.id
-    left join globeq.badges b on b.id=chosen.badge_id`;
-  const rows = await sql`with scores as (${scoreQuery})
-    select id,username,badge,score from scores order by score desc,username_key,id limit 100`;
+  const queries = rankingQueries(kind,userId,today,monday);
+  const rows = await sql.unsafe(queries.top.text,queries.top.params);
   const top = rows.map((row, index) => ({
     id: String(row.id), username: String(row.username), badge: row.badge as string | null,
     score: Number(row.score), rank: 1 + rows.slice(0, index).filter((previous) => Number(previous.score) > Number(row.score)).length,
   }));
   let own: { rank: number; score: number } | null = null;
-  if (userId) {
-    const [record] = await sql`with scores as (${scoreQuery})
-      select mine.score,1+(select count(*) from scores other where other.score > mine.score)::integer as rank
-      from scores mine where mine.id=${userId}`;
+  if (queries.own) {
+    const [record] = await sql.unsafe(queries.own.text,queries.own.params);
     if (record) own = { rank: Number(record.rank), score: Number(record.score) };
   }
   return { top, own };

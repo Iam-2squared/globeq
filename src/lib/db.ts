@@ -8,6 +8,9 @@ export function configured(): boolean {
 
 export function db(): ReturnType<typeof postgres> {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured');
-  connection ??= postgres(process.env.DATABASE_URL, { max: 4, prepare: false, idle_timeout: 15 });
+  // A one-connection setting is useful for embedded PostgreSQL fixture runs.
+  const requested = Number(process.env.DB_POOL_SIZE ?? 4);
+  const max = Number.isInteger(requested) && requested >= 1 && requested <= 4 ? requested : 4;
+  connection ??= postgres(process.env.DATABASE_URL, { max, prepare: false, idle_timeout: 15 });
   return connection;
 }

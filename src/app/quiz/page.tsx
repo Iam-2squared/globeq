@@ -7,10 +7,10 @@ import { QuizPlayer } from '@/components/quiz-player';
 import './quiz.css';
 
 export const dynamic = 'force-dynamic';
-export default async function Quiz({ searchParams }: { searchParams: Promise<{ date?: string }> }) {
+export default async function Quiz({ searchParams }: { searchParams: Promise<{ date?: string | string[] }> }) {
   const { date: inputDate } = await searchParams;
   const today = japanDate();
-  const date = validQuizDate(inputDate ?? today) ?? today;
+  const date = validQuizDate(typeof inputDate === 'string' ? inputDate : today) ?? today;
   const user = await currentUser();
   const questions = configured() ? await publishedQuestions(date) : [];
   const answers = user && configured() ? await answersForDay(user.id, date) : [];

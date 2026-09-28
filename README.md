@@ -13,6 +13,7 @@ npm run dev
 npm run typecheck
 npm test
 npm run build
+npm run test:e2e
 ```
 
 For a serverless deployment, use a PostgreSQL transaction-pooler URL; prepared statements are disabled in the app's DB client. Run migrations with a database owner before switching traffic. `db:migrate` is additive and tracks applied files. No fixtures, real news, editor rights, tokens or password data are inserted by the migration.
@@ -21,7 +22,7 @@ For a serverless deployment, use a PostgreSQL transaction-pooler URL; prepared s
 
 Do not connect a feed until [docs/CONTENT_SOURCES.md](docs/CONTENT_SOURCES.md) records its rights and fields. A human verifies source, correct answer, original summary and neutrality as described in [docs/CONTENT_POLICY.md](docs/CONTENT_POLICY.md). Import draft packages, review each question and publish a Tokyo date only after its 20+ questions pass the gate. The operator CLI is documented in [docs/OPERATIONS.md](docs/OPERATIONS.md). AI-generated text is never auto-published.
 
-The sample 20-question data lives only in isolated tests, uses `example.test` and **is not news**. Do not seed it in production. Never use a production user account for an E2E test.
+`test:e2e` starts an in-memory PGlite wire server, applies the real migration and starts the built app on a local port. Its 20-question package uses `example.test` and **is not news**. Do not seed it in production. Never use a production user account for an E2E test.
 
 ## Safety and scope
 

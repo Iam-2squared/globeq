@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
   if (!process.env.DATABASE_URL) return problem('登録は準備中です。', 503);
   const data = input.safeParse(await request.json().catch(() => null));
   if (!data.success) return problem('ユーザー名またはパスワードの形式を確認してください。', 400);
-  if (!await rateLimit(requestFingerprint(request, normalizeUsername(data.data.username)), 'register', 5, 3600)) return problem('時間をおいて再度お試しください。', 429);
+  if (!await rateLimit(`ip:${requestFingerprint(request)}`, 'register-ip', 10, 3600)
+    || !await rateLimit(`name:${normalizeUsername(data.data.username)}`, 'register-name', 5, 3600))
+    return problem('時間をおいて再度お試しください。', 429);
   try {
     const encrypted = await passwordHash(data.data.password);
     const sql = db();

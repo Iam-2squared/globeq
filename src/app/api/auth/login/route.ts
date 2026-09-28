@@ -12,7 +12,9 @@ export async function POST(request: NextRequest) {
   const data = input.safeParse(await request.json().catch(() => null));
   if (!data.success) return problem('入力を確認してください。', 400);
   const key = normalizeUsername(data.data.username);
-  if (!await rateLimit(requestFingerprint(request, key), 'login', 8, 900)) return problem('時間をおいて再度お試しください。', 429);
+  if (!await rateLimit(`ip:${requestFingerprint(request)}`, 'login-ip', 40, 900)
+    || !await rateLimit(`name:${key}`, 'login-name', 8, 900))
+    return problem('時間をおいて再度お試しください。', 429);
   const [user] = await db()`
     select u.id,u.username,c.password_hash from globeq.users u
     join globeq.auth_credentials c on c.user_id=u.id where u.username_key=${key}`;

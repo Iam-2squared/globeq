@@ -4,9 +4,9 @@ import { newsSearch } from '@/lib/data';
 import './news.css';
 
 export const dynamic = 'force-dynamic';
-export default async function News({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+export default async function News({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
   const { q } = await searchParams;
-  const query = (q ?? '').trim().slice(0, 80);
+  const query = (typeof q === 'string' ? q : '').trim().slice(0, 80);
   const news = configured() ? await newsSearch(query) : [];
   return <div className="news-page"><span className="page-label">DISCOVER / JAPAN</span><h1>ニュースを読む。</h1><p className="lead">答えの向こうにある出来事を、自分の言葉で理解する。</p>
     <form action="/news" className="search-form"><Search size={20} aria-hidden="true" /><input name="q" defaultValue={query} placeholder="タイトル・要約・タグを検索" aria-label="ニュースを検索" maxLength={80}/><button type="submit">検索</button></form>

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   if (!user) return problem('回答するにはログインしてください。', 401);
   const body = input.safeParse(await request.json().catch(() => null));
   if (!body.success) return problem('選択肢を確認してください。', 400);
-  if (!await rateLimit(requestFingerprint(request, user.id), 'answer', 120, 3600)) return problem('時間をおいて再度お試しください。', 429);
+  if (!await rateLimit(`user:${user.id}`, 'answer', 300, 3600)) return problem('時間をおいて再度お試しください。', 429);
   try {
     const [answer] = await db()`select * from globeq.submit_answer(${user.id},${body.data.questionId},${body.data.optionId})`;
     const details = await answerDetails(user.id, body.data.questionId);

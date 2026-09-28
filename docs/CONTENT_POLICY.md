@@ -14,3 +14,5 @@ Applies to every Japan V1 article and question, whether drafted by a person, fee
 8. **Explanation:** Brief GlobeQ-authored neutral summary, shown only after a valid answer. Do not closely paraphrase a long passage. News cards also use original, short summaries.
 
 Draft → independently verify/review → publish. A day may publish only when it contains 20+ reviewed Japan questions passing schema and transaction gates. The reviewer must check all source links and factual claims; code cannot certify factual truth by itself. A report or correction is recorded in an audit event, and a disputed question can be withdrawn while preserving answers and documenting any score recomputation. Never silently change the correct option of a question already answered.
+
+On a validated withdrawal, keep earned badges as historical achievements, preserve immutable initial answers and recalculate affected derived streak and Hard scores. Publish a replacement first so a live day never falls below 20 active questions. Record the correction note in `content_events`.

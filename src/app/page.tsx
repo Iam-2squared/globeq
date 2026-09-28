@@ -13,12 +13,12 @@ function monthShift(month: string, offset: number) {
   return date.toISOString().slice(0, 7);
 }
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
+export default async function Home({ searchParams }: { searchParams: Promise<{ month?: string | string[] }> }) {
   const today = japanDate();
   const params = await searchParams;
   const currentMonth = today.slice(0, 7);
-  const month = /^\d{4}-\d{2}$/.test(params.month ?? '') && (params.month ?? '') <= currentMonth && (params.month ?? '') >= monthShift(currentMonth, -24)
-    ? params.month! : currentMonth;
+  const month = typeof params.month === 'string' && /^\d{4}-\d{2}$/.test(params.month) && params.month <= currentMonth && params.month >= monthShift(currentMonth, -24)
+    ? params.month : currentMonth;
   const user = await currentUser();
   const data = configured() ? await homeData(user?.id ?? null, today, month) : { days: [], activity: [], streak: 0, todayTotal: 0, todayAnswered: 0 };
   const published = new Map(data.days.map((d) => [d.date, d]));
@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ m
 
     <div className="home-grid">
       <section className="card streak-card"><span className="eyebrow">KEEP THE MOMENTUM</span><div className="streak-number"><Flame size={37} /> <strong>{data.streak}</strong><span>DAY STREAK</span></div><p>毎日の20問完了で、連続記録を伸ばそう。</p></section>
-      <section className="card progress-card"><span className="eyebrow">TODAY’S PROGRESS</span><div className="progress-number"><strong>{total ? answered : '—'}</strong><span>/ {total || 20}</span></div><p>{total ? answered >= total ? '今日の問題を完了しました！' : `あと${Math.max(0, total - answered)}問で今日の問題を完了` : '公開された日に回答数を記録します'}</p></section>
+      <section className="card progress-card"><span className="eyebrow">TODAY’S PROGRESS</span><div className="progress-number"><strong>{total ? answered : '—'}</strong><span>/ {total || 20}</span></div><p>{total ? answered >= 20 ? answered >= total ? '今日の問題をすべて解きました！' : `20問達成。残り${total - answered}問にも挑戦できます` : `あと${20 - answered}問で今日の20問を達成` : '公開された日に回答数を記録します'}</p></section>
     </div>
 
     <section className="calendar-section card">

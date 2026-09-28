@@ -7,7 +7,13 @@ export const noStore = { 'Cache-Control': 'private, no-store' };
 export function secureMutation(request: NextRequest): boolean {
   const origin = request.headers.get('origin');
   if (!origin || request.headers.get('content-type')?.split(';')[0].trim() !== 'application/json') return false;
-  try { return new URL(origin).origin === new URL(request.url).origin; }
+  try {
+    // The external Host reflects the browser's requested authority; Next may rewrite request.url internally.
+    const source = new URL(origin);
+    const host = request.headers.get('host');
+    const scheme = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol.slice(0,-1);
+    return Boolean(host && source.host === host && source.protocol === `${scheme}:`);
+  }
   catch { return false; }
 }
 

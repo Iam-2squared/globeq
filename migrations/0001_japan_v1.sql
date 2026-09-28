@@ -89,6 +89,14 @@ create table globeq.user_answers (
   unique (user_id, question_id)
 );
 create index answers_user_date on globeq.user_answers(user_id, answered_at desc);
+create function globeq.reject_answer_change() returns trigger language plpgsql as $$
+begin
+  raise exception 'first answers are immutable' using errcode = '23000';
+end;
+$$;
+create trigger immutable_first_answers before update or delete on globeq.user_answers
+  for each row execute function globeq.reject_answer_change();
+revoke all on function globeq.reject_answer_change() from public;
 create table globeq.daily_stats (
   user_id uuid not null references globeq.users(id) on delete restrict,
   day_id uuid not null references globeq.quiz_days(id) on delete restrict,
@@ -245,14 +253,14 @@ begin
       correct_answers = globeq.user_scores.correct_answers + excluded.correct_answers,
       all_time_hard = globeq.user_scores.all_time_hard + excluded.all_time_hard;
 
-    insert into globeq.daily_stats(user_id, day_id, answered, correct)
+    insert into globeq.daily_stats as ds(user_id, day_id, answered, correct)
     values (p_user, v_day, 1, v_option_correct::integer)
     on conflict (user_id, day_id) do update set
-      answered = globeq.daily_stats.answered + 1,
-      correct = globeq.daily_stats.correct + excluded.correct,
-      completed_at = case when globeq.daily_stats.answered + 1 >= 20
-        then coalesce(globeq.daily_stats.completed_at, now()) else globeq.daily_stats.completed_at end
-    returning answered, correct, completed_at into v_count, v_correct_count, v_completed;
+      answered = ds.answered + 1,
+      correct = ds.correct + excluded.correct,
+      completed_at = case when ds.answered + 1 >= 20
+        then coalesce(ds.completed_at, now()) else ds.completed_at end
+    returning ds.answered, ds.correct, ds.completed_at into v_count, v_correct_count, v_completed;
 
     if v_option_correct and v_difficulty = 'hard' then
       v_monday := v_date - (extract(isodow from v_date)::integer - 1);

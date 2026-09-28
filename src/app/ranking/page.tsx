@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 const choices: { key: RankingKind; label: string; icon: typeof Flame }[] = [
   { key:'streak', label:'Streak', icon:Flame },{ key:'weekly',label:'Weekly Hard',icon:Target },{ key:'all-time',label:'All-Time Hard',icon:Trophy },
 ];
-export default async function Ranking({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+export default async function Ranking({ searchParams }: { searchParams: Promise<{ type?: string | string[] }> }) {
   const { type } = await searchParams;
   const kind: RankingKind = type === 'weekly' || type === 'all-time' ? type : 'streak';
   const user = await currentUser();
