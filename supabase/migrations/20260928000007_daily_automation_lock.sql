@@ -1,0 +1,1 @@
+-- Prevent duplicate concurrent OpenAI generation/publish for one Tokyo day.\ncreate unique index automation_one_active_day on globeq.automation_runs(local_date) where status in ('running','published');\n
