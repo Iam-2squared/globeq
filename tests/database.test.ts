@@ -105,14 +105,14 @@ describe('TOP100 + current user rank', () => {
   it('returns 100 sorted rows, tie rank and position outside TOP100 for every metric', async () => {
     await db.exec(`insert into globeq.users(username,username_key)
       select 'member' || lpad(n::text,3,'0'),'member' || lpad(n::text,3,'0') from generate_series(1,105) n;
-      insert into globeq.user_scores(user_id,all_time_hard)
-      select id,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
+      insert into globeq.user_scores(user_id,all_time_hard,correct_answers)
+      select id,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
       from globeq.users where username_key like 'member%';`);
     await db.query(`update globeq.user_scores s set streak_current=
       case when u.username_key='member002' then 299 else 300-substring(u.username_key,7)::int end,
       last_completed_day=$1 from globeq.users u where s.user_id=u.id and u.username_key like 'member%'`,[today]);
-    await db.query(`insert into globeq.user_weekly_scores(user_id,monday,hard_correct)
-      select id,$1,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
+    await db.query(`insert into globeq.user_weekly_scores(user_id,monday,hard_correct,first_correct)
+      select id,$1,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
       from globeq.users where username_key like 'member%'`,[mondayOf(today)]);
     for(const kind of ['all-time','weekly','streak'] as const){
       const queries=rankingQueries(kind,userId,today,mondayOf(today));
