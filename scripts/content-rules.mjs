@@ -2,7 +2,7 @@
 export function validatePublishRows(rows, date) {
   const issues = [];
   const active = rows.filter(row => row.status !== 'withdrawn');
-  if (active.length < 20) issues.push(`At least 20 active questions are required; found ${active.length}`);
+  if (active.length < 1 || active.length > 100) issues.push(`A published Japan day requires 1-100 active questions; found ${active.length}`);
   const events = new Set();
   for (const row of active) {
     if (!['reviewed', 'published'].includes(row.status)) issues.push(`${row.id}: question is not reviewed`);

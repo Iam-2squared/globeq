@@ -20,11 +20,11 @@ const itemSchema=z.object({
   difficulty:z.enum(['easy','normal','hard']),
   options:z.array(z.object({label:z.string().min(1).max(240),correct:z.boolean()})).length(4),
 });
-const resultSchema=z.object({items:z.array(itemSchema).min(20).max(32)});
+const resultSchema=z.object({items:z.array(itemSchema).min(1).max(100)});
 
 const jsonSchema={
   type:'object',additionalProperties:false,required:['items'],properties:{items:{
-    type:'array',minItems:20,maxItems:32,items:{type:'object',additionalProperties:false,
+    type:'array',minItems:1,maxItems:100,items:{type:'object',additionalProperties:false,
       required:['title','summary','sourceName','sourceUrl','publishedAt','category','tags','eventKey','prompt','explanation','difficulty','options'],
       properties:{
         title:{type:'string',minLength:8,maxLength:300},summary:{type:'string',minLength:12,maxLength:800},
@@ -67,7 +67,7 @@ async function searchAndDraft(date:string){
   const apiKey=process.env.OPENAI_API_KEY;
   if(!apiKey)throw new Error('OPENAI_API_KEY is required');
   const model=process.env.OPENAI_DAILY_MODEL||'gpt-5.6';
-  const prompt=`GlobeQ Japan の ${date}（日本時間）用に、最新ニュースの4択問題候補を24〜30件作成してください。
+  const prompt=`GlobeQ Japan の ${date}（日本時間）用に、最新ニュースから、品質条件を満たす4択問題候補を作れるだけ作成してください。最低件数のノルマはありません。重複や弱い題材で水増しせず、最大100件です。
 必ずWeb検索を使い、検索対象は許可された日本政府公式ドメインだけです。各項目は1つの公式Webページだけで事実確認できる内容にしてください。
 対象は直近7日以内に公式発表された出来事。できるだけ新しいものを優先し、同じ出来事・同じURLは重複させないでください。
 記事本文の転載や長い引用は禁止。summary/explanationは短い独自日本語要約にしてください。sourceUrlは検索で実際に確認した個別発表ページのHTTPS URL。
@@ -116,9 +116,8 @@ export async function runDailyContent(targetDate=tokyoDate()){
       const issues=validateItem(item,targetDate,seenUrls,seenEvents);
       if(issues.length){rejected.push(item.sourceUrl+': '+issues.join(', '));continue;}
       seenUrls.add(item.sourceUrl);seenEvents.add(item.eventKey);accepted.push(item);
-      if(accepted.length===20)break;
+      if(accepted.length===100)break;
     }
-    if(accepted.length<20)throw new Error(`Only ${accepted.length} valid unique items; need 20. Rejected: ${rejected.slice(0,5).join(' | ')}`);
 
     await sql.begin(async tx=>{
       await tx`insert into globeq.quiz_days(region,local_date) values('japan',${targetDate}) on conflict do nothing`;
@@ -151,18 +150,18 @@ export async function runDailyContent(targetDate=tokyoDate()){
           select question_id,count(*)::integer option_count,count(*) filter(where is_correct)::integer correct_count,
             count(distinct lower(trim(label)))::integer distinct_labels from globeq.answer_options group by question_id
         ) x on x.question_id=q.id where q.day_id=${day.id}`;
-      if(Number(gate.total)!==20||Number(gate.reviewed)!==20||Number(gate.structurally_valid)!==20)
-        throw new Error('Final transactional publish gate failed');
+      if(Number(gate.total)<1||Number(gate.total)>100||Number(gate.reviewed)!==Number(gate.total)||Number(gate.structurally_valid)!==Number(gate.total))
+        throw new Error('Final transactional publish gate failed: requires 1-100 valid questions, with every question reviewed and structurally valid');
       await tx`update globeq.questions set status='published' where day_id=${day.id} and status='reviewed'`;
       await tx`update globeq.news_articles set state='published' where id in
         (select article_id from globeq.questions where day_id=${day.id} and status='published')`;
       await tx`update globeq.quiz_days set status='published',published_at=now(),published_by=${editor.id} where id=${day.id}`;
       await tx`insert into globeq.content_events(actor_id,event_type,note)
-        values(${editor.id},'automated_day_published',${'japan '+targetDate+': 20 AI-generated questions passed automatic gates'})`;
+        values(${editor.id},'automated_day_published',${'japan '+targetDate+': '+accepted.length+' AI-generated questions passed automatic gates'})`;
     });
     await sql`update globeq.automation_runs set status='published',candidate_count=${generated.length},
-      accepted_count=20,finished_at=now(),note='20 questions automatically published' where id=${run.id}`;
-    return {ok:true,date:targetDate,status:'published',candidates:generated.length,published:20};
+      accepted_count=${accepted.length},finished_at=now(),note=${accepted.length+' questions automatically published'} where id=${run.id}`;
+    return {ok:true,date:targetDate,status:'published',candidates:generated.length,published:accepted.length};
   }catch(error){
     const message=error instanceof Error?error.message:String(error);
     await sql`update globeq.automation_runs set status='failed',finished_at=now(),note=${message.slice(0,1500)} where id=${run.id}`;

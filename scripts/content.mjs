@@ -122,7 +122,7 @@ async function withdraw() {
     const [question] = await tx`select q.id,q.day_id,q.article_id,q.status from globeq.questions q where q.id=${questionId} for update`;
     if (!question || question.status !== 'published') throw new Error('Only published questions can be withdrawn');
     const [counts] = await tx`select count(*)::integer as total from globeq.questions where day_id=${dayRow.id} and status='published'`;
-    if (Number(counts.total) <= 20) throw new Error('Publish and review a replacement first; at least 20 must stay active');
+    if (Number(counts.total) <= 1) throw new Error('Publish a replacement first; a published day must retain at least one active question');
     await tx`update globeq.questions set status='withdrawn' where id=${questionId}`;
     await tx`update globeq.news_articles set state='withdrawn' where id=${question.article_id}`;
     await tx`insert into globeq.content_events(actor_id,question_id,event_type,note)
@@ -152,10 +152,14 @@ async function withdraw() {
       const oldDays = await tx`select s.day_id,to_char(d.local_date,'YYYY-MM-DD') as date
         from globeq.daily_stats s join globeq.quiz_days d on d.id=s.day_id where s.user_id=${userId}`;
       for(const old of oldDays){const stat=perDay.get(old.date)??{answered:0,correct:0};await tx`update globeq.daily_stats set answered=${stat.answered},correct=${stat.correct},
-        completed_at=case when ${stat.answered}>=20 then coalesce(completed_at,now()) else null end
+        completed_at=case when ${stat.answered} >= (
+          select count(*) from globeq.questions q where q.day_id=${old.day_id} and q.status='published'
+        ) and ${stat.answered}>0 then coalesce(completed_at,now()) else null end
         where user_id=${userId} and day_id=${old.day_id}`;}
       let current=0,longest=0,last=null;
-      for(const [date,stat] of perDay){if(stat.answered<20)continue;
+      for(const [date,stat] of perDay){
+        const [publishedCount] = await tx`select count(*)::integer total from globeq.questions where day_id=${stat.id} and status='published'`;
+        if(stat.answered < Number(publishedCount.total) || Number(publishedCount.total)===0)continue;
         current=last&&Date.parse(`${date}T00:00:00Z`)-Date.parse(`${last}T00:00:00Z`)===86400000?current+1:1;
         longest=Math.max(longest,current);last=date;
       }

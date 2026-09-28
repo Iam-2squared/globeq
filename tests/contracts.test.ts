@@ -51,9 +51,12 @@ describe('editorial gate', () => {
     verification_note:'Source checked directly by the editor.',
     source_url:`https://source.example/${i}`,published_at:new Date('2026-09-28T04:00:00Z'),
   });
-  it('requires 20 independently reviewed questions', () => {
-    expect(validatePublishRows(Array.from({length:19},(_,i)=>good(i)),'2026-09-28')).toContain('At least 20 active questions are required; found 19');
-    expect(validatePublishRows(Array.from({length:20},(_,i)=>good(i)),'2026-09-28')).toEqual([]);
+  it('allows 1-100 reviewed questions with no fixed daily quota', () => {
+    expect(validatePublishRows([],'2026-09-28')).toContain('A published Japan day requires 1-100 active questions; found 0');
+    expect(validatePublishRows([good(0)],'2026-09-28')).toEqual([]);
+    expect(validatePublishRows(Array.from({length:19},(_,i)=>good(i)),'2026-09-28')).toEqual([]);
+    expect(validatePublishRows(Array.from({length:100},(_,i)=>good(i)),'2026-09-28')).toEqual([]);
+    expect(validatePublishRows(Array.from({length:101},(_,i)=>good(i)),'2026-09-28')).toContain('A published Japan day requires 1-100 active questions; found 101');
   });
   it('blocks ambiguity, duplicate events and unchecked rights', () => {
     const rows = Array.from({length:20},(_,i)=>good(i));
@@ -104,7 +107,7 @@ describe('replay and public ranking boundary',()=>{
     expect(route).toContain('replay: z.boolean()');
     expect(route).toContain('false as eligible');
     const player=require('node:fs').readFileSync('src/components/quiz-player.tsx','utf8');
-    expect(player).toContain('もう一度20問を解く');
+    expect(player).toContain('もう一度すべて解く');
     expect(player).toContain('ランキング・正解率・Streakには影響しません');
   });
 });
@@ -117,8 +120,8 @@ describe('daily automatic content pipeline',()=>{
     const vercel=require('node:fs').readFileSync('vercel.ts','utf8');
     expect(route).toContain('CRON_SECRET');
     expect(route).toContain('authorization');
-    expect(pipeline).toContain("accepted.length<20");
-    expect(pipeline).toContain("accepted.length===20");
+    expect(pipeline).toContain("accepted.length===100");
+    expect(pipeline).toContain("gate.total)<1");
     expect(pipeline).toContain("tool_choice:'required'");
     expect(pipeline).toContain('allowed_domains');
     expect(pipeline).toContain("status='published'");
