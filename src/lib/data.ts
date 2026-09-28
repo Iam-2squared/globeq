@@ -26,7 +26,7 @@ export async function publishedQuestions(date: string): Promise<PublicQuestion[]
   return cachedPublishedQuestions(date);
 }
 
-export async function answerDetailsexport async function answerDetails(userId: string, questionId: string): Promise<AnswerResult | null> {
+export async function answerDetails(userId: string, questionId: string): Promise<AnswerResult | null> {
   const rows = await db()`
     select q.id as "questionId",a.option_id as "optionId",o.id as "correctOptionId",
       a.is_correct as correct,a.competition_eligible as eligible,
@@ -78,7 +78,7 @@ export async function newsSearch(query = '', before?: string): Promise<NewsRow[]
   return !query && !before ? cachedLatestNews() : queryNews(query, before);
 }
 
-export async function homeDataexport async function homeData(userId: string | null, today = japanDate(), month = today.slice(0, 7)) {
+export async function homeData(userId: string | null, today = japanDate(), month = today.slice(0, 7)) {
   const sql = db();
   const [dayRows, activityRows, scoreRows, todayRows] = await Promise.all([
     sql`select to_char(local_date,'YYYY-MM-DD') as date,
@@ -130,7 +130,7 @@ export async function accountData(userId: string, today = japanDate()) {
   return { ...(row as unknown as Stats), badges: badges as unknown as {id:string;title:string;description:string;earnedAt:Date}[] };
 }
 
-export type RankingKindexport type RankingKind = 'streak' | 'weekly' | 'all-time';
+export type RankingKind = 'streak' | 'weekly' | 'all-time';
 export async function ranking(kind: RankingKind, userId: string | null, today = japanDate()) {
   const sql = db();
   const monday = mondayOf(today);
