@@ -1,0 +1,50 @@
+name: Production visual evidence
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install Playwright
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Capture production mobile pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/capture.mjs <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
+          const page=await context.newPage();
+          const base='https://globeq.vercel.app';
+          const pages=[['home','/'],['news','/news'],['quiz','/quiz'],['ranking','/ranking'],['account','/account']];
+          fs.mkdirSync('production-visual',{recursive:true});
+          const evidence=[];
+          for(const [name,path] of pages){
+            const response=await page.goto(base+path,{waitUntil:'networkidle',timeout:60000});
+            if(!response || response.status()!==200) throw new Error(name+' HTTP '+response?.status());
+            await page.screenshot({path:'production-visual/'+name+'.png',fullPage:true});
+            evidence.push({name,path,status:response.status(),title:await page.title(),textLength:(await page.locator('body').innerText()).length});
+          }
+          const quiz=await (await page.request.get(base+'/api/questions?date=2026-09-28')).json();
+          evidence.push({questions:quiz.questions?.length??-1,options:quiz.questions?.map(q=>q.options?.length??-1)});
+          fs.writeFileSync('production-visual/evidence.json',JSON.stringify(evidence,null,2));
+          await browser.close();
+          NODE
+          node /tmp/capture.mjs
+
+      - name: Upload production visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: globeq-production-mobile-20260928
+          path: production-visual/
+          retention-days: 30
