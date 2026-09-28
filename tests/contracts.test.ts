@@ -108,3 +108,21 @@ describe('replay and public ranking boundary',()=>{
     expect(player).toContain('ランキング・正解率・Streakには影響しません');
   });
 });
+
+
+describe('daily automatic content pipeline',()=>{
+  it('keeps the cron authenticated and all-or-nothing',()=>{
+    const route=require('node:fs').readFileSync('src/app/api/cron/daily-content/route.ts','utf8');
+    const pipeline=require('node:fs').readFileSync('src/lib/daily-content.ts','utf8');
+    const vercel=require('node:fs').readFileSync('vercel.ts','utf8');
+    expect(route).toContain('CRON_SECRET');
+    expect(route).toContain('authorization');
+    expect(pipeline).toContain("accepted.length<20");
+    expect(pipeline).toContain("accepted.length===20");
+    expect(pipeline).toContain("tool_choice:'required'");
+    expect(pipeline).toContain('allowed_domains');
+    expect(pipeline).toContain("status='published'");
+    expect(vercel).toContain("'/api/cron/daily-content'");
+    expect(vercel).toContain("'15 20 * * *'");
+  });
+});
