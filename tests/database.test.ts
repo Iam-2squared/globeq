@@ -68,11 +68,11 @@ describe('initial migration and answer transaction', () => {
       where id=(select article_id from globeq.questions where id=$1)`,[questions[0].id])).rejects.toThrow(/immutable/);
     await expect(db.query("update globeq.questions set status='draft' where id=$1",[questions[0].id])).rejects.toThrow(/immutable/);
   });
-  it('awards completion and hard scores exactly once on 20 first answers', async () => {
+  it('awards completion and first-correct scores exactly once on 20 first answers', async () => {
     for (const question of questions.slice(1)) await db.query('select * from globeq.submit_answer($1,$2,$3)',[userId,question.id,question.correct]);
     const score = await db.query<{total_answers:number;correct_answers:number;all_time_hard:number;streak_current:number;streak_longest:number}>(
       'select * from globeq.user_scores where user_id=$1',[userId]);
-    expect(score.rows[0]).toMatchObject({total_answers:20,correct_answers:20,all_time_hard:4,streak_current:1,streak_longest:1});
+    expect(score.rows[0]).toMatchObject({total_answers:20,correct_answers:20,all_time_hard:0,streak_current:1,streak_longest:1});
     const stat = await db.query<{answered:number;correct:number;completed_at:string}>(
       'select answered,correct,completed_at from globeq.daily_stats where user_id=$1',[userId]);
     expect(stat.rows[0].answered).toBe(20);
@@ -96,7 +96,7 @@ describe('initial migration and answer transaction', () => {
     const result=await db.query<{eligible:boolean}>(`select * from globeq.submit_answer($1,$2,$3)`,[userId,q.rows[0].id,option.rows[0].id]);
     expect(result.rows[0].eligible).toBe(false);
     const score=await db.query<{total_answers:number;all_time_hard:number}>('select total_answers,all_time_hard from globeq.user_scores where user_id=$1',[userId]);
-    expect(score.rows[0]).toMatchObject({total_answers:20,all_time_hard:4});
+    expect(score.rows[0]).toMatchObject({total_answers:20,all_time_hard:0});
     const earned=await db.query(`insert into globeq.selected_badges(user_id,badge_id) values($1,'first-answer') returning badge_id`,[userId]);
     expect(earned.rows).toHaveLength(1);
     await expect(db.query(`insert into globeq.selected_badges(user_id,badge_id) values($1,'week-streak') on conflict(user_id) do update set badge_id=excluded.badge_id`,[userId])).rejects.toThrow();
@@ -124,7 +124,7 @@ describe('TOP100 + current user rank', () => {
       const top={rows:[...positive.rows,...zeros.rows]};
       const own=await db.query<{rank:number;score:number}>(queries.own!.text,queries.own!.params);
       expect(top.rows).toHaveLength(100);
-      expect(own.rows[0]).toMatchObject({rank:106,score:kind==='streak'?1:4});
+      expect(own.rows[0]).toMatchObject({rank:kind==='streak'?106:1,score:kind==='streak'?1:20});
       expect(top.rows[0].score).toBe(top.rows[1].score);
     }
   });
