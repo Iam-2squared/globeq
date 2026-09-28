@@ -88,3 +88,17 @@ No fixture escaped the isolated DB. Japan V1 remains **NOT RELEASED**.
 | Next | Obtain source rights/editorial operation and authorized free-tier GlobeQ DB/Vercel targets; perform fixture-only mobile checks, live migrations and safe deployment; complete production smoke before V1 release |
 
 No user data, production service, paid plan, Practice/ARK repository or Practice database was modified. The release gate remains **NOT PASSED**. The CI status above applies to `c7ced3c`; verify any later status-only commit separately.
+
+
+## 2026-09-28 18:55 JST — Supabase GitHub layout correction
+
+| Field | State |
+| --- | --- |
+| Trigger | GlobeQ Free Supabase project was created in Tokyo, but GitHub integration could not finalize because this branch had no root `supabase/` project layout |
+| Verified cause | Supabase's documented GitHub integration expects the configured working directory to contain `supabase/`; working directory `.` is correct when `./supabase` exists |
+| Fix | Added `supabase/config.toml`; moved the three additive migrations into timestamped `supabase/migrations/`; updated the isolated migration runner, DB tests and HTTP E2E to use the same canonical migration directory |
+| Production safety | No production migration, fixture, news or user-data write was performed by this correction |
+| Repo scope | `Iam-2squared/globeq` only; Practice/ARK untouched |
+| Next | Verify CI, then retry Supabase GitHub integration with repository `Iam-2squared/globeq` and working directory `.`. Keep production deployment disabled until the first live migration is deliberately approved |
+
+Japan V1 remains **NOT RELEASED**.

@@ -11,9 +11,9 @@ let userId: string;
 
 beforeAll(async () => {
   db = new PGlite();
-  await db.exec(readFileSync('migrations/0001_japan_v1.sql','utf8'));
-  await db.exec(readFileSync('migrations/0002_content_integrity.sql','utf8'));
-  await db.exec(readFileSync('migrations/0003_answer_correction_lock.sql','utf8'));
+  await db.exec(readFileSync('supabase/migrations/20260928000001_japan_v1.sql','utf8'));
+  await db.exec(readFileSync('supabase/migrations/20260928000002_content_integrity.sql','utf8'));
+  await db.exec(readFileSync('supabase/migrations/20260928000003_answer_correction_lock.sql','utf8'));
   const user = await db.query<{id:string}>("insert into globeq.users(username,username_key) values ('Starter','starter') returning id");
   userId = user.rows[0].id;
   await db.query('insert into globeq.user_scores(user_id) values ($1)',[userId]);

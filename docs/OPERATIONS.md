@@ -3,7 +3,7 @@
 ## Before running a live pipeline
 
 1. Approve a source's specific feed/API fields and use terms in `CONTENT_SOURCES.md`. There are **no approved live connectors yet**. Never scrape the article body on unclear rights. Manually enter a URL only after an editor checks its rights, attribution and the fact used.
-2. Configure a PostgreSQL database and apply additive migrations (`DATABASE_URL=… npm run db:migrate`). Keep `globeq` off Supabase Data API. The migration creates no real content or editor.
+2. Configure a PostgreSQL database. Supabase production deployment uses the timestamped files in `supabase/migrations/`. For isolated/local or explicitly managed databases, `DATABASE_URL=… npm run db:migrate` reads the same directory. **Never use both deployment paths against the same production database.** Keep `globeq` off Supabase Data API. The migrations create no real content or editor.
 3. Register an ordinary operator username, then have a database administrator deliberately change that user's `globeq.users.role` to `editor` through a private database connection. Set `EDITOR_USER_ID` to its UUID in the operator environment. Do not add a public role-upgrade API.
 
 ## Draft package and review
@@ -52,7 +52,7 @@ DATABASE_URL='postgresql://…' EDITOR_USER_ID='uuid' npm run content:publish --
 
 Review **every** question. The editor must open the actual article, verify the correct option directly, check the original URL, publication time, rights, original summary and political neutrality. The programmatic publish gate requires at least 20 active reviewed questions for that Tokyo day, four distinct choices, one correct choice, source review and freshness. A review flag is an attestation by the editor; code cannot establish factual truth or licensing on its own. A published day can receive a reviewed replacement first and be published again before withdrawing a disputed question.
 
-Import normalizes title/source/category/text whitespace, UTC publication time and canonical HTTPS URLs (removing tracking parameters and fragments). Additive migration `0002` prevents repeated article URLs, event keys and reuse of one article for another question; it also locks reviewed questions, their choices and published article metadata. If an existing database has duplicate event keys or reused articles, resolve them through the editorial correction workflow before applying that migration; do not delete answer history. An editor still checks that two different URLs do not describe the same event.
+Import normalizes title/source/category/text whitespace, UTC publication time and canonical HTTPS URLs (removing tracking parameters and fragments). Additive migration `20260928000002_content_integrity.sql` prevents repeated article URLs, event keys and reuse of one article for another question; it also locks reviewed questions, their choices and published article metadata. If an existing database has duplicate event keys or reused articles, resolve them through the editorial correction workflow before applying that migration; do not delete answer history. An editor still checks that two different URLs do not describe the same event.
 
 Reports are saved in `globeq.question_reports`. Investigate them manually. To withdraw a proven error, add and review/publish a replacement so at least 20 remain, then:
 

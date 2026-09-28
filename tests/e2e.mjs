@@ -41,9 +41,9 @@ async function waitFor(url) {
 try {
   await server.start();
   const migrated=await run(['scripts/migrate.mjs']);
-  assert.match(migrated,/APPLIED 0001_japan_v1.sql/);
-  assert.match(migrated,/APPLIED 0002_content_integrity.sql/);
-  assert.match(migrated,/APPLIED 0003_answer_correction_lock.sql/);
+  assert.match(migrated,/APPLIED 20260928000001_japan_v1.sql/);
+  assert.match(migrated,/APPLIED 20260928000002_content_integrity.sql/);
+  assert.match(migrated,/APPLIED 20260928000003_answer_correction_lock.sql/);
   client=postgres(url,{max:1,prepare:false,ssl:false});
   const [editor]=await client`insert into globeq.users(username,username_key,role)
     values('FixtureEditor','fixtureeditor','editor') returning id`;

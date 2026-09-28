@@ -18,7 +18,7 @@ npm run build
 npm run test:e2e
 ```
 
-For a serverless deployment, use a PostgreSQL transaction-pooler URL; prepared statements are disabled in the app's DB client. Run migrations with a database owner before switching traffic. `db:migrate` is additive and tracks applied files. No fixtures, real news, editor rights, tokens or password data are inserted by the migration.
+For a serverless deployment, use a PostgreSQL transaction-pooler URL; prepared statements are disabled in the app's DB client. Production-compatible migrations live in `supabase/migrations/` with timestamped filenames. `db:migrate` reads that same directory for isolated/local or explicitly managed setup. If Supabase GitHub production deployment is enabled, do not also run `db:migrate` against that same production database; use one deployment path only. No fixtures, real news, editor rights, tokens or password data are inserted by the migrations.
 
 ## Editorial operations
 
