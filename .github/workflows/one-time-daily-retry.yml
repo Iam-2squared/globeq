@@ -1,0 +1,14 @@
+name: One-time daily content retry
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/one-time-daily-retry.yml']
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retry today's production daily content
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 330 \
+            -A 'vercel-cron/1.0' \
+            https://globeq.vercel.app/api/cron/daily-content
