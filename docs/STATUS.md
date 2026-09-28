@@ -117,3 +117,16 @@ Japan V1 remains **NOT RELEASED**.
 | Production writes | None from this commit; no live OpenAI request and no news import performed |
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 19:35 JST — first live-source pilot selected
+
+| Field | State |
+| --- | --- |
+| Candidate | 国土交通省「日本スタートアップ大賞2026」の国土交通スタートアップ賞 (2026-09-25) |
+| Verified facts for draft input | 国土交通大臣賞の受賞者は株式会社SkyDrive; 応募は317件; SkyDriveは空飛ぶクルマ(eVTOL)の開発・製造・販売・運航サービス等を行う |
+| Rights mode | MLIT manual-source pilot only; source page/terms checked, article body not stored and automatic crawling remains disabled |
+| Next | Use only these concise facts for one private OpenAI draft, then independently compare the generated correct option/explanation against the official source before any import/review |
+| Publish state | **No live question published** |
+
+Japan V1 remains **NOT RELEASED**.
