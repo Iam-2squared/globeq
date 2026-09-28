@@ -1,6 +1,6 @@
 # GlobeQ by SOLUYRA
 
-Japan-first news learning: 4-choice daily quizzes, original short explanations, source links, calendar/streak, rankings and badges. **Japan V1 is live in production.** Production: https://globeq.vercel.app . The official product contract is [docs/SPEC.md](docs/SPEC.md); the latest dated evidence is [docs/STATUS.md](docs/STATUS.md).
+Japan-first news learning: 1–100 validated 4-choice questions per Tokyo day, original short explanations, source links, calendar/streak, rankings and badges. **Japan V1 is officially released and live in production (2026-09-28).** Production: https://globeq.vercel.app . The official product contract is [docs/SPEC.md](docs/SPEC.md); the latest dated evidence is [docs/STATUS.md](docs/STATUS.md).
 
 The current pass/block release checklist is in [docs/RELEASE_AUDIT.md](docs/RELEASE_AUDIT.md).
 
@@ -22,7 +22,7 @@ For a serverless deployment, use a PostgreSQL transaction-pooler URL; prepared s
 
 ## Editorial operations
 
-Do not connect a feed until [docs/CONTENT_SOURCES.md](docs/CONTENT_SOURCES.md) records its rights and fields. A human verifies source, correct answer, original summary and neutrality as described in [docs/CONTENT_POLICY.md](docs/CONTENT_POLICY.md). Import draft packages, review each question and publish a Tokyo date only after its 20+ questions pass the gate. The operator CLI is documented in [docs/OPERATIONS.md](docs/OPERATIONS.md). AI-generated text is never auto-published.
+Automatic daily operation uses only the approved official domains recorded in [docs/CONTENT_SOURCES.md](docs/CONTENT_SOURCES.md). AI-generated items pass deterministic source/format/freshness/duplicate/answer/neutrality gates described in [docs/CONTENT_POLICY.md](docs/CONTENT_POLICY.md); the product permanently discloses that AI-generated content may be inaccurate. Import draft packages, review each question and publish a Tokyo date only after its 20+ questions pass the gate. The operator CLI is documented in [docs/OPERATIONS.md](docs/OPERATIONS.md). AI-generated text is never auto-published.
 
 `test:e2e` starts an in-memory PGlite wire server, applies the real migration and starts the built app on a local port. Its 20-question package uses `example.test` and **is not news**. Do not seed it in production. Never use a production user account for an E2E test.
 
