@@ -292,3 +292,24 @@ The word “first” means the immutable first submitted answer for a question. 
 | Content integrity | A proposed 5-minute content cache was rejected by E2E because it could briefly retain a withdrawn question; no stale-content cache shipped |
 
 Japan V1 remains **LIVE / OFFICIAL PASS**.
+
+
+## 2026-09-28 — automatic Japan 20-question daily operations enabled
+
+| Field | State |
+| --- | --- |
+| Schedule | Vercel Cron once/day at `15 20 * * *` UTC (target ≈ 05:15 JST; Hobby execution may occur anywhere in that UTC hour) |
+| Candidate discovery | OpenAI Responses API live `web_search`, required tool call, restricted to approved Japanese government domains |
+| Approved domains | MLIT / MOE / MAFF / FSA / MOFA / MHLW / METI |
+| Source terms | Official site terms checked as PDL1.0-based unless specifically excluded; attribution/original URL retained; full article bodies/images are not stored |
+| Daily generation | 24–30 candidates requested; deterministic gate accepts exactly **20** |
+| Automatic gates | HTTPS + approved domain/source match + unused URL/event + <=7-day freshness + four distinct choices + exactly one correct + descriptive-only political/policy wording |
+| Failure behavior | Fewer than 20 valid unique items = **publish nothing**; failure recorded privately |
+| Publication | 20 accepted items are inserted/review-recorded/published in one DB transaction |
+| Concurrency/cost guard | One active automation run per Tokyo date; duplicate cron delivery cannot start another OpenAI generation |
+| Audit | Private `globeq.automation_runs` + per-question `content_events` |
+| AI disclosure | Existing low-prominence global AI accuracy notice remains mandatory |
+| Supabase | Migrations **6 + 7** applied; Security Advisor **0 lints** |
+| Release verification | PR #6 merged; Japan V1 checks PASS; Production Smoke PASS; Production Visual PASS; Vercel production SUCCESS |
+
+The first genuinely new-day OpenAI generation will be exercised by the next scheduled production cron. Today's 2026-09-28 day was already published, so the pipeline intentionally short-circuits rather than regenerating it.
