@@ -1,6 +1,6 @@
 # GlobeQ by SOLUYRA
 
-Japan-first news learning: 4-choice daily quizzes, original short explanations, source links, calendar/streak, rankings and badges. **Development in progress. Japan V1 is not released.** The official product contract is [docs/SPEC.md](docs/SPEC.md); the latest dated evidence is [docs/STATUS.md](docs/STATUS.md).
+Japan-first news learning: 4-choice daily quizzes, original short explanations, source links, calendar/streak, rankings and badges. **Japan V1 is live in production.** Production: https://globeq.vercel.app . The official product contract is [docs/SPEC.md](docs/SPEC.md); the latest dated evidence is [docs/STATUS.md](docs/STATUS.md).
 
 The current pass/block release checklist is in [docs/RELEASE_AUDIT.md](docs/RELEASE_AUDIT.md).
 
@@ -31,4 +31,4 @@ Do not connect a feed until [docs/CONTENT_SOURCES.md](docs/CONTENT_SOURCES.md) r
 - Browser question payloads contain no answer flag, correct option or explanation. Answers are checked by a PostgreSQL transaction that keeps each user's first choice and score fixed.
 - Login uses username and an Argon2id password hash, a hashed opaque session token and an HttpOnly cookie. Mutations require a same-origin request and are rate limited.
 - Region/date data keys allow later World/100+ questions per day; Points and cosmetics are deferred.
-- This repository is independent of Practice, ARK and Ark Terminal. No paid integration is required by the code. Production release requires verified content rights, a real database, deployment and a read-only smoke test.
+- This repository is independent of Practice, ARK and Ark Terminal. Japan V1 production release passed verified-content, database, deployment, security, browser and public-smoke gates on 2026-09-28. Daily content still requires the documented human review gate before publication.
