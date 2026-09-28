@@ -167,9 +167,9 @@ try {
   const pastAnswer=await fetch(web+'/api/answers',{method:'POST',headers:{origin:web,'content-type':'application/json',cookie:session},
     body:JSON.stringify({questionId:pastQuiz.questions[0].id,optionId:pastQuiz.questions[0].options[0].id})});
   assert.equal((await pastAnswer.json()).eligible,false);
-  const [afterStudy]=await client`select s.total_answers,s.all_time_hard from globeq.user_scores s
+  const [afterStudy]=await client`select s.total_answers,s.correct_answers from globeq.user_scores s
     join globeq.users u on u.id=s.user_id where u.username_key='fixturelearner'`;
-  assert.equal(afterStudy.total_answers,20);assert.equal(afterStudy.all_time_hard,4);
+  assert.equal(afterStudy.total_answers,20);assert.equal(afterStudy.correct_answers,20);
   const replacement=structuredClone(items[0]);
   replacement.article.sourceUrl='https://example.test/globeq/replacement';
   replacement.article.eventKey='synthetic-replacement';
