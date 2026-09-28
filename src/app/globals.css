@@ -58,3 +58,6 @@ h3 { font-size:17px; }
   .main-content { padding:27px 17px 80px; }.card { padding:21px; border-radius:20px; }
   .tab-nav { bottom:8px; height:68px; border-radius:18px; }.tab-link { font-size:9px; }.tab-center .tab-icon { margin-top:-26px; width:51px; height:51px; }
 }
+
+.ai-disclaimer { max-width:1060px; margin:0 auto 18px; padding:0 28px 22px; color:#8a958f; font-size:10px; line-height:1.7; text-align:center; }
+@media (max-width:640px) { .ai-disclaimer { padding:0 20px 12px; font-size:9px; } }
