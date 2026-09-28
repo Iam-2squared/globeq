@@ -28,7 +28,7 @@ const jsonSchema={
       required:['title','summary','sourceName','sourceUrl','publishedAt','category','tags','eventKey','prompt','explanation','difficulty','options'],
       properties:{
         title:{type:'string',minLength:8,maxLength:300},summary:{type:'string',minLength:12,maxLength:800},
-        sourceName:{type:'string',minLength:2,maxLength:120},sourceUrl:{type:'string',format:'uri'},
+        sourceName:{type:'string',minLength:2,maxLength:120},sourceUrl:{type:'string',minLength:12,maxLength:2000},
         publishedAt:{type:'string'},category:{type:'string',minLength:2,maxLength:80},
         tags:{type:'array',maxItems:8,items:{type:'string',minLength:1,maxLength:80}},
         eventKey:{type:'string',minLength:8,maxLength:160},prompt:{type:'string',minLength:10,maxLength:500},
