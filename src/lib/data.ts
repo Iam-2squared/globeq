@@ -1,4 +1,3 @@
-import { unstable_cache } from 'next/cache';
 import { db } from './db';
 import { japanDate, mondayOf } from './time';
 import { rankingQueries } from './ranking-queries';
@@ -11,7 +10,7 @@ export type AnswerResult = {
   sourcePublishedAt: string; withdrawn: boolean; firstSubmit?: boolean;
 };
 
-const cachedPublishedQuestions = unstable_cache(async (date: string): Promise<PublicQuestion[]> => {
+export async function publishedQuestions(date: string): Promise<PublicQuestion[]> {
   const rows = await db()`
     select q.id,q.prompt,q.difficulty,q.position,
       json_agg(json_build_object('id',o.id,'label',o.label,'position',o.position) order by o.position) as options
@@ -20,10 +19,6 @@ const cachedPublishedQuestions = unstable_cache(async (date: string): Promise<Pu
     where d.region='japan' and d.local_date=${date} and d.status='published' and q.status='published'
     group by q.id order by q.position`;
   return rows.map(row => publicQuestion(row)) as PublicQuestion[];
-}, ['published-questions'], { revalidate: 300 });
-
-export async function publishedQuestions(date: string): Promise<PublicQuestion[]> {
-  return cachedPublishedQuestions(date);
 }
 
 export async function answerDetails(userId: string, questionId: string): Promise<AnswerResult | null> {
@@ -53,12 +48,7 @@ export async function answersForDay(userId: string, date: string): Promise<Answe
   return rows as unknown as AnswerResult[];
 }
 
-type NewsRow = {
-  id: string; title: string; summary: string; sourceName: string; sourceUrl: string;
-  publishedAt: string; category: string; tags: string[];
-};
-
-async function queryNews(query = '', before?: string): Promise<NewsRow[]> {
+export async function newsSearch(query = '', before?: string) {
   const pattern = `%${query.replace(/[\\%_]/g, '\\$&')}%`;
   const rows = await db()`
     select n.id,n.title,n.summary,n.source_name as "sourceName",n.source_url as "sourceUrl",
@@ -69,13 +59,10 @@ async function queryNews(query = '', before?: string): Promise<NewsRow[]> {
         or array_to_string(n.tags,' ') ilike ${pattern} escape '\\')
       and (${!before} or n.published_at < ${before ?? '9999-12-31T00:00:00Z'})
     order by n.published_at desc,n.id desc limit 40`;
-  return rows as unknown as NewsRow[];
-}
-
-const cachedLatestNews = unstable_cache(async () => queryNews(), ['latest-news'], { revalidate: 300 });
-
-export async function newsSearch(query = '', before?: string): Promise<NewsRow[]> {
-  return !query && !before ? cachedLatestNews() : queryNews(query, before);
+  return rows as unknown as Array<{
+    id: string; title: string; summary: string; sourceName: string; sourceUrl: string;
+    publishedAt: string; category: string; tags: string[];
+  }>;
 }
 
 export async function homeData(userId: string | null, today = japanDate(), month = today.slice(0, 7)) {
