@@ -35,3 +35,24 @@ These approvals cover **manual source-page review and concise fact extraction on
 | 外務省 | https://www.mofa.go.jp/mofaj/annai/legalmatters/index.html | **Approved, conditional on item-level exceptions** | Disabled | 出典：外務省ウェブサイト（URL）／GlobeQが加工して作成 |
 
 All five sites state that their content is generally usable under PDL1.0 unless otherwise indicated. This is not a blanket approval for third-party images, attached documents, logos, externally-owned text, or a different feed-specific rule.
+
+
+## Automatic official-source search approval — 2026-09-28
+
+GlobeQ may use OpenAI Responses API `web_search` once per Tokyo day with an explicit domain allowlist. The automatic job does **not** store full source bodies, images or attachments. It stores only the individual official page URL/title/publication time plus GlobeQ-authored short summary/question/explanation.
+
+Approved automatic domains:
+
+| Source | Domain | Terms basis | Automatic use |
+| --- | --- | --- | --- |
+| 国土交通省 | `mlit.go.jp` | PDL1.0 unless specifically excluded | official-page discovery + factual quiz drafting |
+| 環境省 | `env.go.jp` | PDL1.0 unless specifically excluded | same |
+| 農林水産省 | `maff.go.jp` | PDL1.0 unless specifically excluded | same |
+| 金融庁 | `fsa.go.jp` | PDL1.0 unless specifically excluded | same |
+| 外務省 | `mofa.go.jp` | PDL1.0 unless specifically excluded | same |
+| 厚生労働省 | `mhlw.go.jp` | PDL1.0 unless specifically excluded | same |
+| 経済産業省 | `meti.go.jp` | PDL1.0 unless specifically excluded | same |
+
+Automatic safeguards: HTTPS individual-page URL, domain/source-name match, no reused URL/event key, maximum 7-day freshness window, four distinct choices, exactly one stored correct option, descriptive-only political/policy wording, and exclusion when the searched page explicitly indicates third-party rights/exception material needed for the question. Source attribution and the original URL remain visible in GlobeQ.
+
+Because AI/web search can still be wrong, the global product notice remains mandatory. A failed or sub-20 run publishes **nothing**; it is recorded privately in `globeq.automation_runs`.
