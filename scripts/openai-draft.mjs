@@ -30,7 +30,7 @@ export async function generateDraft(source,{apiKey=process.env.OPENAI_API_KEY,mo
   const response=await fetchImpl('https://api.openai.com/v1/responses',{method:'POST',
     headers:{authorization:`Bearer ${apiKey}`,'content-type':'application/json'},
     body:JSON.stringify({model,input:[
-      {role:'system',content:[{type:'input_text',text:'Create a PRIVATE GlobeQ Japan quiz draft. Use ONLY supplied facts; never add facts from memory or inference. Write natural Japanese. Make one neutral factual four-choice question with exactly one correct answer. Political/election/policy content must ask only verifiable descriptive facts and never evaluate actors, motives, support or opposition. Summary and explanation must be original concise wording, not article-body reproduction. If facts are insufficient, do not invent missing information.'}]},
+      {role:'system',content:[{type:'input_text',text:'Create a PRIVATE GlobeQ Japan quiz draft. Use ONLY supplied facts; never add facts from memory or inference. Write natural Japanese. Make one neutral factual four-choice question with exactly one correct answer. Political/election/policy content must ask only verifiable descriptive facts and never evaluate actors, motives, support or opposition. Summary and explanation must be original concise wording, not article-body reproduction. Return the four options in a varied order; do not consistently put the correct answer first. If facts are insufficient, do not invent missing information.'}]},
       {role:'user',content:[{type:'input_text',text:JSON.stringify(s)}]}],
       text:{format:{type:'json_schema',name:'globeq_draft',strict:true,schema:outputSchema}}})});
   if(!response.ok)throw new Error(`OpenAI Responses API failed: ${response.status}`);

@@ -29,6 +29,8 @@ describe('public contract', () => {
     expect(all.own?.text).not.toContain('00000000-0000-0000-0000-000000000001');
     expect(all.own?.params).toHaveLength(1);
     expect(rankingQueries('weekly',null,'2026-09-28','2026-09-28').top.params).toEqual(['2026-09-28']);
+    expect(rankingQueries('weekly',null,'2026-09-28','2026-09-28').top.text).toContain('first_correct');
+    expect(rankingQueries('all-time',null,'2026-09-28','2026-09-28').top.text).toContain('correct_answers');
     expect(rankingQueries('streak',null,'2026-09-28','2026-09-28').zero?.(20).params).toEqual(['2026-09-28',20]);
   });
 });

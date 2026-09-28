@@ -259,3 +259,18 @@ Japan V1 is **CONTENT READY / RELEASE NOT YET EXECUTED**.
 **GlobeQ Japan V1 — OFFICIAL PASS / LIVE.**
 
 The release gate is closed for the Japan V1 application itself. The remaining work is operational growth, not a blocker for this release: automate candidate collection only from approved sources, use OpenAI for private draft generation, keep human fact/rights/neutrality review mandatory, and sustain at least 20 published Japan questions per Tokyo day. World and Points remain deferred.
+
+
+## 2026-09-28 21:10 JST — requested automation/ranking/answer-order revision
+
+| Field | State |
+| --- | --- |
+| Editorial policy | Daily per-question human review removed as a product requirement. AI-generated content may flow through automated publication gates; source/format/duplicate/freshness protections remain |
+| User notice | Added a low-prominence global footer: AI is used for questions/summaries/explanations and content may not always be correct; users are directed to original/public sources for important information |
+| Answer ordering | Future imports deterministically rotate four options by event key; OpenAI draft prompt also requires varied option order |
+| Existing 2026-09-28 set | Production answer-option positions will be redistributed separately by additive data operation without changing option IDs or stored user answers |
+| Ranking | Streak retained. Weekly/All-Time ranking changes from Hard-only to **correct first competitive attempts regardless of difficulty** |
+| Existing users | Additive migration backfills weekly first-correct from immutable `user_answers`; all-time uses existing `correct_answers`. No user answer/history reset |
+| Deployment | Changes isolated on `feature/auto-content-first-correct` until CI/migration verification |
+
+The word “first” means the immutable first submitted answer for a question. Historical/noncompetitive study remains excluded from competitive rankings.

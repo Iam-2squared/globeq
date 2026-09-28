@@ -10,28 +10,28 @@ export function rankingQueries(kind: RankingKind, userId: string | null, today: 
   top: Query; zero: ((limit:number)=>Query) | null; own: Query | null;
 } {
   if(kind==='all-time') return {
-    top:{text:`select u.id,u.username,b.title as badge,s.all_time_hard as score
+    top:{text:`select u.id,u.username,b.title as badge,s.correct_answers as score
       from globeq.user_scores s join globeq.users u on u.id=s.user_id ${badgeJoin}
-      where s.all_time_hard>0 order by s.all_time_hard desc,u.username_key,u.id limit 100`,params:[]},
+      where s.correct_answers>0 order by s.correct_answers desc,u.username_key,u.id limit 100`,params:[]},
     zero:(limit)=>({text:`select u.id,u.username,b.title as badge,0 as score
       from globeq.users u join globeq.user_scores s on s.user_id=u.id ${badgeJoin}
-      where s.all_time_hard=0 order by u.username_key,u.id limit $1::integer`,params:[limit]}),
+      where s.correct_answers=0 order by u.username_key,u.id limit $1::integer`,params:[limit]}),
     own:userId?{text:`with mine as (select all_time_hard as score from globeq.user_scores where user_id=$1::uuid)
-      select mine.score,1+(select count(*) from globeq.user_scores s where s.all_time_hard>mine.score)::integer as rank from mine`,params:[userId]}:null,
+      select mine.score,1+(select count(*) from globeq.user_scores s where s.correct_answers>mine.score)::integer as rank from mine`,params:[userId]}:null,
   };
   if(kind==='weekly') return {
-    top:{text:`select u.id,u.username,b.title as badge,w.hard_correct as score
+    top:{text:`select u.id,u.username,b.title as badge,w.first_correct as score
       from globeq.user_weekly_scores w join globeq.users u on u.id=w.user_id ${badgeJoin}
-      where w.monday=$1::date and w.hard_correct>0
-      order by w.hard_correct desc,u.username_key,u.id limit 100`,params:[monday]},
+      where w.monday=$1::date and w.first_correct>0
+      order by w.first_correct desc,u.username_key,u.id limit 100`,params:[monday]},
     zero:(limit)=>({text:`select u.id,u.username,b.title as badge,0 as score
       from globeq.users u left join globeq.user_weekly_scores w on w.user_id=u.id and w.monday=$1::date
-      ${badgeJoin} where w.user_id is null or w.hard_correct=0
+      ${badgeJoin} where w.user_id is null or w.first_correct=0
       order by u.username_key,u.id limit $2::integer`,params:[monday,limit]}),
-    own:userId?{text:`with mine as (select coalesce(w.hard_correct,0) as score from globeq.users u
+    own:userId?{text:`with mine as (select coalesce(w.first_correct,0) as score from globeq.users u
       left join globeq.user_weekly_scores w on w.user_id=u.id and w.monday=$1::date where u.id=$2::uuid)
       select mine.score,1+(select count(*) from globeq.user_weekly_scores other
-        where other.monday=$1::date and other.hard_correct>mine.score)::integer as rank from mine`,params:[monday,userId]}:null,
+        where other.monday=$1::date and other.first_correct>mine.score)::integer as rank from mine`,params:[monday,userId]}:null,
   };
   return {
     top:{text:`select u.id,u.username,b.title as badge,s.streak_current as score

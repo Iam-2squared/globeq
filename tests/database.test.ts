@@ -14,6 +14,8 @@ beforeAll(async () => {
   await db.exec(readFileSync('supabase/migrations/20260928000001_japan_v1.sql','utf8'));
   await db.exec(readFileSync('supabase/migrations/20260928000002_content_integrity.sql','utf8'));
   await db.exec(readFileSync('supabase/migrations/20260928000003_answer_correction_lock.sql','utf8'));
+  await db.exec(readFileSync('supabase/migrations/20260928000004_security_hardening.sql','utf8'));
+  await db.exec(readFileSync('supabase/migrations/20260928000005_first_correct_ranking.sql','utf8'));
   const user = await db.query<{id:string}>("insert into globeq.users(username,username_key) values ('Starter','starter') returning id");
   userId = user.rows[0].id;
   await db.query('insert into globeq.user_scores(user_id) values ($1)',[userId]);
@@ -66,18 +68,18 @@ describe('initial migration and answer transaction', () => {
       where id=(select article_id from globeq.questions where id=$1)`,[questions[0].id])).rejects.toThrow(/immutable/);
     await expect(db.query("update globeq.questions set status='draft' where id=$1",[questions[0].id])).rejects.toThrow(/immutable/);
   });
-  it('awards completion and hard scores exactly once on 20 first answers', async () => {
+  it('awards completion and first-correct scores exactly once on 20 first answers', async () => {
     for (const question of questions.slice(1)) await db.query('select * from globeq.submit_answer($1,$2,$3)',[userId,question.id,question.correct]);
     const score = await db.query<{total_answers:number;correct_answers:number;all_time_hard:number;streak_current:number;streak_longest:number}>(
       'select * from globeq.user_scores where user_id=$1',[userId]);
-    expect(score.rows[0]).toMatchObject({total_answers:20,correct_answers:20,all_time_hard:4,streak_current:1,streak_longest:1});
+    expect(score.rows[0]).toMatchObject({total_answers:20,correct_answers:20,all_time_hard:0,streak_current:1,streak_longest:1});
     const stat = await db.query<{answered:number;correct:number;completed_at:string}>(
       'select answered,correct,completed_at from globeq.daily_stats where user_id=$1',[userId]);
     expect(stat.rows[0].answered).toBe(20);
     expect(stat.rows[0].completed_at).toBeTruthy();
-    const weekly = await db.query<{hard_correct:number}>(
-      'select hard_correct from globeq.user_weekly_scores where user_id=$1 and monday=$2',[userId,mondayOf(today)]);
-    expect(weekly.rows[0].hard_correct).toBe(4);
+    const weekly = await db.query<{first_correct:number}>(
+      'select first_correct from globeq.user_weekly_scores where user_id=$1 and monday=$2',[userId,mondayOf(today)]);
+    expect(weekly.rows[0].first_correct).toBe(20);
     const badges=await db.query<{badge_id:string}>('select badge_id from globeq.user_badges where user_id=$1',[userId]);
     expect(badges.rows.map(b=>b.badge_id)).toEqual(expect.arrayContaining(['first-answer','first-perfect']));
   });
@@ -94,7 +96,7 @@ describe('initial migration and answer transaction', () => {
     const result=await db.query<{eligible:boolean}>(`select * from globeq.submit_answer($1,$2,$3)`,[userId,q.rows[0].id,option.rows[0].id]);
     expect(result.rows[0].eligible).toBe(false);
     const score=await db.query<{total_answers:number;all_time_hard:number}>('select total_answers,all_time_hard from globeq.user_scores where user_id=$1',[userId]);
-    expect(score.rows[0]).toMatchObject({total_answers:20,all_time_hard:4});
+    expect(score.rows[0]).toMatchObject({total_answers:20,all_time_hard:0});
     const earned=await db.query(`insert into globeq.selected_badges(user_id,badge_id) values($1,'first-answer') returning badge_id`,[userId]);
     expect(earned.rows).toHaveLength(1);
     await expect(db.query(`insert into globeq.selected_badges(user_id,badge_id) values($1,'week-streak') on conflict(user_id) do update set badge_id=excluded.badge_id`,[userId])).rejects.toThrow();
@@ -105,14 +107,14 @@ describe('TOP100 + current user rank', () => {
   it('returns 100 sorted rows, tie rank and position outside TOP100 for every metric', async () => {
     await db.exec(`insert into globeq.users(username,username_key)
       select 'member' || lpad(n::text,3,'0'),'member' || lpad(n::text,3,'0') from generate_series(1,105) n;
-      insert into globeq.user_scores(user_id,all_time_hard)
-      select id,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
+      insert into globeq.user_scores(user_id,all_time_hard,correct_answers)
+      select id,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
       from globeq.users where username_key like 'member%';`);
     await db.query(`update globeq.user_scores s set streak_current=
       case when u.username_key='member002' then 299 else 300-substring(u.username_key,7)::int end,
       last_completed_day=$1 from globeq.users u where s.user_id=u.id and u.username_key like 'member%'`,[today]);
-    await db.query(`insert into globeq.user_weekly_scores(user_id,monday,hard_correct)
-      select id,$1,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
+    await db.query(`insert into globeq.user_weekly_scores(user_id,monday,hard_correct,first_correct)
+      select id,$1,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end,case when username_key='member002' then 299 else 300-substring(username_key,7)::int end
       from globeq.users where username_key like 'member%'`,[mondayOf(today)]);
     for(const kind of ['all-time','weekly','streak'] as const){
       const queries=rankingQueries(kind,userId,today,mondayOf(today));
@@ -122,7 +124,7 @@ describe('TOP100 + current user rank', () => {
       const top={rows:[...positive.rows,...zeros.rows]};
       const own=await db.query<{rank:number;score:number}>(queries.own!.text,queries.own!.params);
       expect(top.rows).toHaveLength(100);
-      expect(own.rows[0]).toMatchObject({rank:106,score:kind==='streak'?1:4});
+      expect(own.rows[0]).toMatchObject(kind==='all-time'?{rank:107,score:0}:{rank:106,score:kind==='streak'?1:20});
       expect(top.rows[0].score).toBe(top.rows[1].score);
     }
   });

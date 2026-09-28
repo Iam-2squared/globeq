@@ -111,7 +111,7 @@ try {
   for(let i=0;i<20;i++){
     const q=quiz.questions[i];
     const result=await fetch(web+'/api/answers',{method:'POST',headers:{origin:web,'content-type':'application/json',cookie:session},
-      body:JSON.stringify({questionId:q.id,optionId:q.options[0].id})});
+      body:JSON.stringify({questionId:q.id,optionId:q.options.find(option=>option.label==='Answer A').id})});
     if(result.status!==200) throw new Error(`Answer ${i+1} ${result.status}: ${await result.text()}`);
     const body=await result.json();
     assert.equal(body.correct,true);assert.equal(body.eligible,true);
@@ -120,9 +120,9 @@ try {
   const retry=await fetch(web+'/api/answers',{method:'POST',headers:{origin:web,'content-type':'application/json',cookie:session},
     body:JSON.stringify({questionId:quiz.questions[0].id,optionId:quiz.questions[0].options[1].id})});
   assert.equal((await retry.json()).firstSubmit,false);
-  const [score]=await client`select s.total_answers,s.all_time_hard,s.streak_current from globeq.user_scores s
+  const [score]=await client`select s.total_answers,s.correct_answers,s.streak_current from globeq.user_scores s
     join globeq.users u on u.id=s.user_id where u.username_key='fixturelearner'`;
-  assert.equal(score.total_answers,20);assert.equal(score.all_time_hard,4);assert.equal(score.streak_current,1);
+  assert.equal(score.total_answers,20);assert.equal(score.correct_answers,20);assert.equal(score.streak_current,1);
   const unearned=await fetch(web+'/api/account/badge',{method:'POST',headers:{origin:web,'content-type':'application/json',cookie:session},
     body:JSON.stringify({badgeId:'week-streak'})});
   assert.equal(unearned.status,403);
@@ -167,9 +167,9 @@ try {
   const pastAnswer=await fetch(web+'/api/answers',{method:'POST',headers:{origin:web,'content-type':'application/json',cookie:session},
     body:JSON.stringify({questionId:pastQuiz.questions[0].id,optionId:pastQuiz.questions[0].options[0].id})});
   assert.equal((await pastAnswer.json()).eligible,false);
-  const [afterStudy]=await client`select s.total_answers,s.all_time_hard from globeq.user_scores s
+  const [afterStudy]=await client`select s.total_answers,s.correct_answers from globeq.user_scores s
     join globeq.users u on u.id=s.user_id where u.username_key='fixturelearner'`;
-  assert.equal(afterStudy.total_answers,20);assert.equal(afterStudy.all_time_hard,4);
+  assert.equal(afterStudy.total_answers,20);assert.equal(afterStudy.correct_answers,20);
   const replacement=structuredClone(items[0]);
   replacement.article.sourceUrl='https://example.test/globeq/replacement';
   replacement.article.eventKey='synthetic-replacement';

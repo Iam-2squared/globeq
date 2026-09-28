@@ -95,9 +95,9 @@ export async function accountData(userId: string, today = japanDate()) {
   const monday = mondayOf(today);
   const [row] = await db()`
     select u.username,s.total_answers as "totalAnswers",s.correct_answers as "correctAnswers",
-      s.all_time_hard as "allTimeHard",s.streak_longest as "longestStreak",
+      s.correct_answers as "allTimeHard",s.streak_longest as "longestStreak",
       case when s.last_completed_day >= ${today}::date-1 then s.streak_current else 0 end as "currentStreak",
-      coalesce(w.hard_correct,0) as "weeklyHard",b.id as "selectedBadgeId",b.title as "selectedBadge"
+      coalesce(w.first_correct,0) as "weeklyHard",b.id as "selectedBadgeId",b.title as "selectedBadge"
     from globeq.users u join globeq.user_scores s on s.user_id=u.id
     left join globeq.user_weekly_scores w on w.user_id=u.id and w.monday=${monday}
     left join globeq.selected_badges chosen on chosen.user_id=u.id
