@@ -124,7 +124,7 @@ describe('TOP100 + current user rank', () => {
       const top={rows:[...positive.rows,...zeros.rows]};
       const own=await db.query<{rank:number;score:number}>(queries.own!.text,queries.own!.params);
       expect(top.rows).toHaveLength(100);
-      expect(own.rows[0]).toMatchObject({rank:kind==='streak'?106:1,score:kind==='streak'?1:20});
+      expect(own.rows[0]).toMatchObject({rank:kind==='streak'?106:kind==='weekly'?1:107,score:kind==='streak'?1:kind==='weekly'?20:0});
       expect(top.rows[0].score).toBe(top.rows[1].score);
     }
   });
