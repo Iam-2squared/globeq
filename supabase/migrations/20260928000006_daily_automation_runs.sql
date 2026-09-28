@@ -10,6 +10,7 @@ create table globeq.automation_runs (
   finished_at timestamptz
 );
 create index automation_runs_date on globeq.automation_runs(local_date desc,started_at desc);
+create unique index automation_one_active_day on globeq.automation_runs(local_date) where status in ('running','published');
 revoke all on globeq.automation_runs from public;
 do $$ begin
   if exists(select 1 from pg_roles where rolname='anon') then execute 'revoke all on globeq.automation_runs from anon'; end if;
