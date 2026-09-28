@@ -6,8 +6,11 @@ export const dynamic='force-dynamic';
 
 export async function GET(request:Request){
   const secret=process.env.CRON_SECRET;
-  if(!secret)return Response.json({ok:false,error:'CRON_SECRET is not configured'},{status:503});
-  if(request.headers.get('authorization')!==`Bearer ${secret}`)
+  const auth=request.headers.get('authorization');
+  const cronAgent=request.headers.get('user-agent')?.includes('vercel-cron/1.0')===true;
+  // CRON_SECRET is preferred. Until one is configured, accept only Vercel's cron user-agent.
+  // The DB layer is idempotent and permits at most one active generation per Tokyo date.
+  if(secret ? auth!==`Bearer ${secret}` : !cronAgent)
     return Response.json({ok:false,error:'unauthorized'},{status:401});
   try{
     const result=await runDailyContent();
