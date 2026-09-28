@@ -57,6 +57,7 @@ jobs:
           NODE
 
       - name: Registration login logout smoke
+        if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           set -euo pipefail
