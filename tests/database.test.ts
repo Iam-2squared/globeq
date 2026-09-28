@@ -77,9 +77,9 @@ describe('initial migration and answer transaction', () => {
       'select answered,correct,completed_at from globeq.daily_stats where user_id=$1',[userId]);
     expect(stat.rows[0].answered).toBe(20);
     expect(stat.rows[0].completed_at).toBeTruthy();
-    const weekly = await db.query<{hard_correct:number}>(
-      'select hard_correct from globeq.user_weekly_scores where user_id=$1 and monday=$2',[userId,mondayOf(today)]);
-    expect(weekly.rows[0].hard_correct).toBe(4);
+    const weekly = await db.query<{first_correct:number}>(
+      'select first_correct from globeq.user_weekly_scores where user_id=$1 and monday=$2',[userId,mondayOf(today)]);
+    expect(weekly.rows[0].first_correct).toBe(20);
     const badges=await db.query<{badge_id:string}>('select badge_id from globeq.user_badges where user_id=$1',[userId]);
     expect(badges.rows.map(b=>b.badge_id)).toEqual(expect.arrayContaining(['first-answer','first-perfect']));
   });
@@ -124,7 +124,7 @@ describe('TOP100 + current user rank', () => {
       const top={rows:[...positive.rows,...zeros.rows]};
       const own=await db.query<{rank:number;score:number}>(queries.own!.text,queries.own!.params);
       expect(top.rows).toHaveLength(100);
-      expect(own.rows[0]).toMatchObject({rank:kind==='streak'?106:kind==='weekly'?1:107,score:kind==='streak'?1:kind==='weekly'?20:0});
+      expect(own.rows[0]).toMatchObject({rank:106,score:kind==='streak'?1:20});
       expect(top.rows[0].score).toBe(top.rows[1].score);
     }
   });
