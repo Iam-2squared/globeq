@@ -54,3 +54,20 @@ This entry records a work checkpoint, not a Japan V1 release.
 | Next | Push checkpoint and reach green CI; review indexed ranking scaling and security; complete mobile visual, live editorial content, private DB provisioning and deployment before release |
 
 All fixture accounts/news were in memory and were removed after the test. The release gate remains **NOT PASSED**.
+
+## 2026-09-28 17:59 JST — integrity and release-audit checkpoint
+
+| Field | State |
+| --- | --- |
+| Branch / remote HEAD | `feature/japan-v1` / `6d5dba5dc24e5b1846f63dfc0fc79d758a6af7bb` before this checkpoint push |
+| PR | [Draft #1](https://github.com/Iam-2squared/globeq/pull/1); remains Draft |
+| CI | Previous commit `6d5dba5` **success**, 1/1 verify job; new change will trigger CI |
+| Completed | Additive migrations `0002` and `0003` for article/event uniqueness, immutable reviewed content, indexed rankings and serialized answer/correction; URL/text normalization, three TOP100 variants, withdrawal with article removal and score recomputation, past-study E2E, release audit |
+| Local verification | 12/12 tests PASS, typecheck PASS, build PASS, isolated HTTP E2E PASS (20 today's + 20 past synthetic questions, answer/retry/source, accounts/badge, correction); 5 HTTP routes verified |
+| Ranking / viewport | 100 TOP rows, 106 synthetic users with own rank 106 and ties for each of 3 types; 0 browser viewports verified because Chrome/download unavailable |
+| DB / migrations | 18 application tables plus migration ledger; `0001`–`0003` applied in isolated PGlite; no production DB touched |
+| Deployment | None; public deployment smoke **not run** |
+| Unfinished / blockers | 20+ rights-reviewed real news questions/day, approved live feed/editorial operation, GlobeQ-specific DB and Vercel target, real-browser visual verification, production migration and public smoke |
+| Next | Push branch and verify CI; prepare approved sources and editorial staff; provision authorized free-tier GlobeQ services, verify browser/deployment and update release gate |
+
+No fixture escaped the isolated DB. Japan V1 remains **NOT RELEASED**.

@@ -3,6 +3,7 @@ import { publicQuestion } from '../src/lib/public-question';
 import { japanDate, mondayOf, calendarDays, validQuizDate } from '../src/lib/time';
 import { rankingQueries } from '../src/lib/ranking-queries';
 import { validatePublishRows } from '../scripts/content-rules.mjs';
+import { canonicalArticleUrl,normalizeCandidate } from '../scripts/article-normalization.mjs';
 
 describe('public contract', () => {
   it('allows only question fields and never serializes the answer or explanation', () => {
@@ -27,10 +28,20 @@ describe('public contract', () => {
     expect(all.own?.text).not.toContain('00000000-0000-0000-0000-000000000001');
     expect(all.own?.params).toHaveLength(1);
     expect(rankingQueries('weekly',null,'2026-09-28','2026-09-28').top.params).toEqual(['2026-09-28']);
+    expect(rankingQueries('streak',null,'2026-09-28','2026-09-28').zero?.(20).params).toEqual(['2026-09-28',20]);
   });
 });
 
 describe('editorial gate', () => {
+  it('canonicalizes links and normalizes metadata before duplicate checks', () => {
+    expect(canonicalArticleUrl('https://EXAMPLE.test/a?utm_source=mail&id=3#top')).toBe('https://example.test/a?id=3');
+    expect(() => canonicalArticleUrl('http://example.test/news')).toThrow();
+    const item=normalizeCandidate({article:{title:'  Japan  update ',summary:'  short  text  ',sourceName:' Source ',
+      sourceUrl:'https://EXAMPLE.test/a?fbclid=123',publishedAt:'2026-09-28T13:00:00+09:00',
+      category:'  社会 ',tags:[' 日本 ','日本'],eventKey:' Same Event '},
+      question:{prompt:'  What happened? ',explanation:' A clear explanation ',options:[{label:' A  ',correct:true}]}});
+    expect(item.article).toMatchObject({sourceUrl:'https://example.test/a',title:'Japan update',eventKey:'same-event',tags:['日本']});
+  });
   const good = (i:number) => ({
     id:`q${i}`,status:'reviewed',event_key:`event-${i}`,option_count:4,correct_count:1,distinct_labels:4,
     reviewer_id:'editor',rights_checked:true,neutrality_checked:true,

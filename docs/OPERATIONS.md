@@ -52,13 +52,15 @@ DATABASE_URL='postgresql://…' EDITOR_USER_ID='uuid' npm run content:publish --
 
 Review **every** question. The editor must open the actual article, verify the correct option directly, check the original URL, publication time, rights, original summary and political neutrality. The programmatic publish gate requires at least 20 active reviewed questions for that Tokyo day, four distinct choices, one correct choice, source review and freshness. A review flag is an attestation by the editor; code cannot establish factual truth or licensing on its own. A published day can receive a reviewed replacement first and be published again before withdrawing a disputed question.
 
+Import normalizes title/source/category/text whitespace, UTC publication time and canonical HTTPS URLs (removing tracking parameters and fragments). Additive migration `0002` prevents repeated article URLs, event keys and reuse of one article for another question; it also locks reviewed questions, their choices and published article metadata. If an existing database has duplicate event keys or reused articles, resolve them through the editorial correction workflow before applying that migration; do not delete answer history. An editor still checks that two different URLs do not describe the same event.
+
 Reports are saved in `globeq.question_reports`. Investigate them manually. To withdraw a proven error, add and review/publish a replacement so at least 20 remain, then:
 
 ```sh
 DATABASE_URL='postgresql://…' EDITOR_USER_ID='uuid' npm run content:withdraw -- --question QUESTION_UUID --note '訂正の根拠と対応を記録'
 ```
 
-The withdrawal preserves the initial answer rows and audit history, recalculates affected derived ranking scores and keeps earned badges as historical achievements. This is a correction operation and requires editorial verification. Never run fixtures against a real user or database.
+The withdrawal preserves the initial answer rows and audit history, removes the disputed article from News, recalculates affected derived ranking and longest-streak scores and keeps earned badges as historical achievements. This is a correction operation and requires editorial verification. Never run fixtures against a real user or database.
 
 ## Daily runbook
 

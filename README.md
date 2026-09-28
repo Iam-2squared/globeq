@@ -2,6 +2,8 @@
 
 Japan-first news learning: 4-choice daily quizzes, original short explanations, source links, calendar/streak, rankings and badges. **Development in progress. Japan V1 is not released.** The official product contract is [docs/SPEC.md](docs/SPEC.md); the latest dated evidence is [docs/STATUS.md](docs/STATUS.md).
 
+The current pass/block release checklist is in [docs/RELEASE_AUDIT.md](docs/RELEASE_AUDIT.md).
+
 ## Local development
 
 Requirements: Node 24+, npm, PostgreSQL (or a Supabase PostgreSQL project). Copy `.env.example` to `.env.local` and provide a server-only `DATABASE_URL`; do not commit credentials. Schema `globeq` must remain unexposed to Supabase Data API. If the database is absent, the app renders honest empty states; registration and quiz writes are unavailable.

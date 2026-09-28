@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import postgres from 'postgres';
 import { z } from 'zod';
 import { validatePublishRows } from './content-rules.mjs';
+import { normalizeCandidate } from './article-normalization.mjs';
 
 if (existsSync('.env.local')) process.loadEnvFile('.env.local');
 if (!process.env.DATABASE_URL || !process.env.EDITOR_USER_ID) throw new Error('DATABASE_URL and EDITOR_USER_ID are required');
@@ -32,7 +33,8 @@ async function requireEditor() {
 }
 
 async function importDraft() {
-  const input = pack.parse(JSON.parse(readFileSync(flags.file, 'utf8')));
+  const raw = pack.parse(JSON.parse(readFileSync(flags.file, 'utf8')));
+  const input = pack.parse({...raw,items:raw.items.map(normalizeCandidate)});
   for (const entry of input.items) {
     if (entry.question.options.filter(option=>option.correct).length !== 1 || new Set(entry.question.options.map(o=>o.label.trim().toLowerCase())).size !== 4)
       throw new Error('Each question needs four distinct options and one correct answer');
@@ -110,16 +112,23 @@ async function withdraw() {
   const questionId = id.parse(flags.question);
   const note = z.string().min(12).parse(flags.note);
   await sql.begin(async tx=>{
-    const [question] = await tx`select q.id,q.day_id,q.status from globeq.questions q where q.id=${questionId} for update`;
+    const [candidate] = await tx`select q.day_id from globeq.questions q where q.id=${questionId}`;
+    if (!candidate) throw new Error('Question not found');
+    // Publication takes the day lock first. Match that order, then exclude new
+    // first answers on this question and lock affected users before recomputing.
+    const [dayRow] = await tx`select id from globeq.quiz_days where id=${candidate.day_id} for update`;
+    const [question] = await tx`select q.id,q.day_id,q.article_id,q.status from globeq.questions q where q.id=${questionId} for update`;
     if (!question || question.status !== 'published') throw new Error('Only published questions can be withdrawn');
-    const [dayRow] = await tx`select id from globeq.quiz_days where id=${question.day_id} for update`;
     const [counts] = await tx`select count(*)::integer as total from globeq.questions where day_id=${dayRow.id} and status='published'`;
     if (Number(counts.total) <= 20) throw new Error('Publish and review a replacement first; at least 20 must stay active');
     await tx`update globeq.questions set status='withdrawn' where id=${questionId}`;
+    await tx`update globeq.news_articles set state='withdrawn' where id=${question.article_id}`;
     await tx`insert into globeq.content_events(actor_id,question_id,event_type,note)
       values(${editorId},${questionId},'withdrawn',${note})`;
     // Preserve immutable answer rows. Recalculate only affected users' derived competitive stats.
-    const users = await tx`select distinct user_id from globeq.user_answers where question_id=${questionId}`;
+    const users = await tx`select u.id as user_id from globeq.users u
+      where u.id in (select a.user_id from globeq.user_answers a where a.question_id=${questionId})
+      order by u.id for update`;
     for (const {user_id:userId} of users) {
       const answers = await tx`select d.id as day_id,to_char(d.local_date,'YYYY-MM-DD') as date,
         a.is_correct as correct,q.difficulty from globeq.user_answers a
@@ -149,7 +158,7 @@ async function withdraw() {
         longest=Math.max(longest,current);last=date;
       }
       await tx`update globeq.user_scores set total_answers=${total},correct_answers=${correct},
-        all_time_hard=${hard},streak_current=${current},streak_longest=greatest(streak_longest,${longest}),
+        all_time_hard=${hard},streak_current=${current},streak_longest=${longest},
         last_completed_day=${last} where user_id=${userId}`;
       await tx`update globeq.user_weekly_scores set hard_correct=0 where user_id=${userId}`;
       for(const [monday,count] of weeks) await tx`insert into globeq.user_weekly_scores(user_id,monday,hard_correct)

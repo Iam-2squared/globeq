@@ -44,7 +44,7 @@ export async function answersForDay(userId: string, date: string): Promise<Answe
     join globeq.quiz_days d on d.id=q.day_id
     join globeq.answer_options o on o.question_id=q.id and o.is_correct
     join globeq.news_articles n on n.id=q.article_id
-    where a.user_id=${userId} and d.region='japan' and d.local_date=${date}`;
+    where a.user_id=${userId} and d.region='japan' and d.local_date=${date} and q.status='published'`;
   return rows as unknown as AnswerResult[];
 }
 
@@ -119,7 +119,9 @@ export async function ranking(kind: RankingKind, userId: string | null, today = 
   const sql = db();
   const monday = mondayOf(today);
   const queries = rankingQueries(kind,userId,today,monday);
-  const rows = await sql.unsafe(queries.top.text,queries.top.params);
+  const positive = await sql.unsafe(queries.top.text,queries.top.params);
+  const zero = queries.zero && positive.length < 100 ? queries.zero(100 - positive.length) : null;
+  const rows = zero ? [...positive,...await sql.unsafe(zero.text,zero.params)] : positive;
   const top = rows.map((row, index) => ({
     id: String(row.id), username: String(row.username), badge: row.badge as string | null,
     score: Number(row.score), rank: 1 + rows.slice(0, index).filter((previous) => Number(previous.score) > Number(row.score)).length,
