@@ -313,3 +313,23 @@ Japan V1 remains **LIVE / OFFICIAL PASS**.
 | Release verification | PR #6 merged; Japan V1 checks PASS; Production Smoke PASS; Production Visual PASS; Vercel production SUCCESS |
 
 The first genuinely new-day OpenAI generation will be exercised by the next scheduled production cron. Today's 2026-09-28 day was already published, so the pipeline intentionally short-circuits rather than regenerating it.
+
+
+## 2026-09-28 — GlobeQ Japan V1 OFFICIAL RELEASE
+
+**Release state: OFFICIALLY RELEASED / LIVE**
+
+- Production: `https://globeq.vercel.app`
+- Release baseline: `d18e6c7423da7648db76882eeb4d6da5b08efd4f`
+- GitHub main checks: PASS
+- Production Smoke: PASS
+- Production Visual Evidence: PASS
+- Vercel production: SUCCESS
+- Supabase production migrations: **8 applied**
+- Supabase Security Advisor: **0 lints**
+- Japan daily contract: **1–100 validated questions, no fixed daily quota**
+- Release-day content: **20 published questions / 20 published articles**
+- Smoke accounts remaining: **0**
+- Daily automation: deployed; first new-day scheduled generation is explicitly tracked as post-release operational monitoring.
+
+This entry is the formal Japan V1 release declaration. Subsequent work is post-release maintenance, operations and future product expansion.
