@@ -191,3 +191,23 @@ Japan V1 remains **NOT RELEASED**.
 **Next release gate:** a human editor must independently open the original source for every question and approve fact, answer key, short summary, rights/attribution and neutrality. Nothing is published until that review is complete.
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 20:20 JST — owner source-check report + mechanical revalidation
+
+| Field | Result |
+| --- | --- |
+| Owner review report | Product owner opened the checklist and official source pages and reported no specific corrections; wording was tentative ("probably all okay"), so this is **not** promoted to formal fact/rights/neutrality approval |
+| Audit events | `owner_source_check_reported` recorded for **20 / 20** draft questions |
+| Questions / options | **20 / 80** |
+| Four-choice integrity | **20 / 20 PASS**: exactly four distinct labels and one stored correct option |
+| Duplicate event keys | **0** |
+| Duplicate source URLs | **0** |
+| HTTPS source URLs | **20 / 20** |
+| Editorial freshness window | **20 / 20 PASS** for 2026-09-25 through 2026-09-28 |
+| Formal content reviews | **0 / 20** |
+| Quiz day | `draft` |
+| Public News / public Quiz | **0 / 0** |
+| User answers | **0** |
+
+No publication state was changed. The next gate remains an explicit formal editor approval of each item's fact, answer key, explanation, item-level rights/attribution and neutrality.
