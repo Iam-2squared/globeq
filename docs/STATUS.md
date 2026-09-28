@@ -170,3 +170,24 @@ Japan V1 remains **NOT RELEASED**.
 | Publish state | Source facts only. **0 questions imported, 0 questions reviewed, 0 questions published** |
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 20:15 JST — 20 private real-source drafts loaded into GlobeQ DB
+
+| Field | State |
+| --- | --- |
+| Target | GlobeQ production PostgreSQL project `fdhjlfosfflxdjcmsrvn` only |
+| Quiz day | Japan / 2026-09-28 / **draft** |
+| Source articles | **20**, all `draft` |
+| Questions | **20**, all `draft` |
+| Answer options | **80**; all 20 questions have exactly 4 choices and exactly 1 stored correct option |
+| Human reviews | **0** |
+| Users / user answers | **0 / 0** |
+| Public exposure | **0 questions published**; News remains empty publicly and Quiz remains in preparation state |
+| Draft provenance | Prepared from the official-source fact pack; correct-answer data stays in the private DB and is not committed to public GitHub |
+| Private draft pack SHA256 | `1a2651c24dad4847ba788e7d9250ada21195a6b372a28ddb3c9e02036b8c69da` |
+| Security | Production security-hardening migration applied; Supabase security advisor reports **0 lints** and anon/authenticated have no `globeq` schema usage or private answer-function execution |
+
+**Next release gate:** a human editor must independently open the original source for every question and approve fact, answer key, short summary, rights/attribution and neutrality. Nothing is published until that review is complete.
+
+Japan V1 remains **NOT RELEASED**.
