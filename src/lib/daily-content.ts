@@ -11,7 +11,7 @@ const itemSchema=z.object({
   summary:z.string().min(12).max(800),
   sourceName:z.string().min(2).max(120),
   sourceUrl:z.url().refine(v=>v.startsWith('https://')),
-  publishedAt:z.iso.datetime({offset:true}),
+  publishedAt:z.string().min(10).max(40),
   category:z.string().min(2).max(80),
   tags:z.array(z.string().min(1).max(80)).max(8),
   eventKey:z.string().min(8).max(160),
@@ -128,7 +128,7 @@ export async function runDailyContent(targetDate=tokyoDate()){
       for(let i=0;i<accepted.length;i++){
         const item=accepted[i];
         const [article]=await tx`insert into globeq.news_articles(title,summary,source_name,source_url,published_at,category,tags,event_key)
-          values(${item.title},${item.summary},${item.sourceName},${item.sourceUrl},${item.publishedAt},${item.category},${item.tags},${item.eventKey}) returning id`;
+          values(${item.title},${item.summary},${item.sourceName},${item.sourceUrl},${new Date(Date.parse(item.publishedAt)).toISOString()},${item.category},${item.tags},${item.eventKey}) returning id`;
         const [question]=await tx`insert into globeq.questions(day_id,article_id,event_key,prompt,explanation,difficulty,position,status)
           values(${day.id},${article.id},${item.eventKey},${item.prompt},${item.explanation},${item.difficulty},${i+1},'draft') returning id`;
         const offset=[...item.eventKey].reduce((sum,ch)=>sum+(ch.codePointAt(0)??0),0)%4;
