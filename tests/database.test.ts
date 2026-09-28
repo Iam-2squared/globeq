@@ -47,7 +47,7 @@ afterAll(async () => { await db?.close(); });
 describe('initial migration and answer transaction', () => {
   it('creates every required private table and one-correct guard', async () => {
     const tables = await db.query<{table_name:string}>("select table_name from information_schema.tables where table_schema='globeq'");
-    expect(tables.rows).toHaveLength(18);
+    expect(tables.rows).toHaveLength(19);
     for(const name of ['users','sessions','auth_credentials','news_articles','quiz_days','questions','answer_options','user_answers','daily_stats','badges','user_badges','selected_badges'])
       expect(tables.rows.map(row=>row.table_name)).toContain(name);
     await expect(db.query(`insert into globeq.answer_options(question_id,position,label,is_correct) values($1,4,'Duplicate',true)`,[questions[0].id])).rejects.toThrow();
