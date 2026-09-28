@@ -6,7 +6,7 @@ No live connector is enabled as of 2026-09-28. Source review precedes any extern
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 金融庁（候補） | https://www.fsa.go.jp/fsaNewsListAll_rss2.xml | https://www.fsa.go.jp/rules/index.html and https://www.fsa.go.jp/kouhou/rss.html | RSS title, link, publication time only; confirm actual field mapping before connection | Candidate metadata and original fact checking; original short GlobeQ summary | Display 金融庁ウェブサイト and article URL; identify GlobeQ's summary as an edited work per site rules | No | **Disabled** pending item-specific exceptions review and operator approval |
 
-For each future source, fill all columns, document any caching/time limits and approval date, and verify reuse of titles/metadata and links. Unknown terms mean no body ingestion. A daily candidate job may only read sources marked approved; drafts remain private until a reviewer verifies the answer and publishes at least 20 for the day. RSS discovery by itself does not grant republication rights.
+For each future source, fill all columns, document any caching/time limits and approval date, and verify reuse of titles/metadata and links. Unknown terms mean no body ingestion. A daily candidate job may only read sources marked approved; drafts remain private until the publication gates pass; Japan has no fixed daily minimum and a hard cap of 100. RSS discovery by itself does not grant republication rights.
 
 The 金融庁 RSS is a candidate for financial/regulatory events, not a claim that it yields 20 distinct Japan stories every day. The site rule generally refers to Public Data License 1.0 with attribution and an indication when edited; exceptions and each item still require checking. No request to the feed was made and no connector or automated publishing was enabled.
 
@@ -55,4 +55,4 @@ Approved automatic domains:
 
 Automatic safeguards: HTTPS individual-page URL, domain/source-name match, no reused URL/event key, maximum 7-day freshness window, four distinct choices, exactly one stored correct option, descriptive-only political/policy wording, and exclusion when the searched page explicitly indicates third-party rights/exception material needed for the question. Source attribution and the original URL remain visible in GlobeQ.
 
-Because AI/web search can still be wrong, the global product notice remains mandatory. A failed or sub-20 run publishes **nothing**; it is recorded privately in `globeq.automation_runs`.
+Because AI/web search can still be wrong, the global product notice remains mandatory. A run may publish **1–100** valid unique questions; there is no daily quota. A zero-valid-item or failed run publishes nothing and is recorded privately in `globeq.automation_runs`.
