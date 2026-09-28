@@ -130,3 +130,16 @@ Japan V1 remains **NOT RELEASED**.
 | Publish state | **No live question published** |
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 19:45 JST — Vercel preview bootstrap
+
+| Field | State |
+| --- | --- |
+| Symptom | GitHub Japan V1 CI passes, but Vercel preview deployments for the feature branch report failure |
+| Likely project-state cause | The Vercel project was initially imported while `main` contained only bootstrap documentation, before the Next.js application existed |
+| Fix | Add source-controlled `vercel.ts` declaring the project framework as Next.js and explicit `npm ci` / `npm run build` commands |
+| Release safety | Feature branch only; no PR merge, no production publish, no content publish |
+| Preview behavior | Preview can render honest empty states without a database if Preview secrets are absent; production data is not required merely to inspect the UI |
+
+Japan V1 remains **NOT RELEASED**.
