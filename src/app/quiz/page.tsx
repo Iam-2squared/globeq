@@ -11,9 +11,11 @@ export default async function Quiz({ searchParams }: { searchParams: Promise<{ d
   const { date: inputDate } = await searchParams;
   const today = japanDate();
   const date = validQuizDate(typeof inputDate === 'string' ? inputDate : today) ?? today;
+  const canUseDb = configured();
+  const questionsPromise = canUseDb ? publishedQuestions(date) : Promise.resolve([]);
   const user = await currentUser();
-  const questions = configured() ? await publishedQuestions(date) : [];
-  const answers = user && configured() ? await answersForDay(user.id, date) : [];
+  const answersPromise = user && canUseDb ? answersForDay(user.id, date) : Promise.resolve([]);
+  const [questions, answers] = await Promise.all([questionsPromise, answersPromise]);
   return <div className="quiz-page"><span className="page-label">TODAY'S PERSPECTIVE / JAPAN</span><h1>今日を、理解する。</h1><p className="lead">4択で確かめてから、要点と出典に進もう。</p>
     <div className="quiz-toolbar"><div><strong>{date.replaceAll('-', '.')}</strong><span>{date===today?'今日のクイズ':'過去問学習 · ランキング対象外'}</span></div><form action="/quiz"><label htmlFor="quiz-date">日付を選ぶ</label><input id="quiz-date" name="date" type="date" defaultValue={date} max={today}/><button type="submit">移動</button></form></div>
     {questions.length ? <QuizPlayer key={date} date={date} questions={questions} initialAnswers={answers} signedIn={!!user} isToday={date===today}/>
