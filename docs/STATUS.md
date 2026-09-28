@@ -71,3 +71,20 @@ All fixture accounts/news were in memory and were removed after the test. The re
 | Next | Push branch and verify CI; prepare approved sources and editorial staff; provision authorized free-tier GlobeQ services, verify browser/deployment and update release gate |
 
 No fixture escaped the isolated DB. Japan V1 remains **NOT RELEASED**.
+
+## 2026-09-28 18:01 JST — verified Draft PR checkpoint
+
+| Field | State |
+| --- | --- |
+| Branch / HEAD at this entry | `feature/japan-v1` / remote `c7ced3cc836233bf6a0b66d82a6247c290353b57`; this status entry follows that implementation commit |
+| PR | [Draft #1](https://github.com/Iam-2squared/globeq/pull/1), head `c7ced3c` when checked; description refreshed; not merged |
+| CI | Run [#36400787002](https://github.com/Iam-2squared/globeq/actions/runs/36400787002) **success**; `verify` job 1 success / 0 failure, all npm ci/typecheck/test/build/E2E steps success |
+| Completed | 5-tab Japanese app, secure answer and account flow, review/publish/correction pipeline, 3 rankings, badges, 3 additive migrations, release audit, Draft PR and green implementation CI |
+| Tests | 12 pass / 0 fail / 12 total locally; isolated HTTP E2E PASS; 20 synthetic questions on today's date and 20 on a past date; 5/5 HTTP tab routes checked |
+| Ranking / browser | 100 TOP rows and outside-user rank 106 across all 3 metrics with 106 fixture users; 0 browser viewports checked (Chrome binary/download unavailable) |
+| Database | 18 application tables + 1 migration ledger, `0001`–`0003` applied and tested in isolated PGlite; production database migration **not run** |
+| Deployment | No preview or production deployment; public smoke test **not run** |
+| Unfinished / blockers | Rights-approved daily news sources and human-reviewed 20 real questions/day, GlobeQ-only database and deployment target, browser visual check, live migration, deploy and public smoke |
+| Next | Obtain source rights/editorial operation and authorized free-tier GlobeQ DB/Vercel targets; perform fixture-only mobile checks, live migrations and safe deployment; complete production smoke before V1 release |
+
+No user data, production service, paid plan, Practice/ARK repository or Practice database was modified. The release gate remains **NOT PASSED**. The CI status above applies to `c7ced3c`; verify any later status-only commit separately.
