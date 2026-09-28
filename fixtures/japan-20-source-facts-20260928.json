@@ -1,0 +1,342 @@
+{
+  "date": "2026-09-28",
+  "region": "japan",
+  "sources": [
+    {
+      "title": "「日本スタートアップ大賞2026」の国土交通スタートアップ賞の受賞者を決定",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/sogo17_hh_000215.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "経済・技術",
+      "tags": [
+        "スタートアップ",
+        "航空"
+      ],
+      "eventKey": "mlit-startup-award-2026-skydrive",
+      "facts": [
+        "国土交通大臣賞（国土交通スタートアップ賞）の受賞者は株式会社SkyDrive。",
+        "日本スタートアップ大賞2026は社会的なインパクトのあるスタートアップを表彰する制度。"
+      ]
+    },
+    {
+      "title": "９月の主要建設資材の需給動向は全ての調査対象資材において均衡",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/tochi_fudousan_kensetsugyo14_hh_000001_00380.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "経済",
+      "tags": [
+        "建設",
+        "統計"
+      ],
+      "eventKey": "mlit-construction-materials-202609",
+      "facts": [
+        "調査対象は生コンクリート、鋼材、木材など7資材13品目。",
+        "価格動向は全て横ばい、需給動向は全て均衡、在庫状況は全て普通だった。",
+        "調査期間は令和8年9月1日から5日。"
+      ]
+    },
+    {
+      "title": "建設労働需給調査結果（令和８年８月分調査）について",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/tochi_fudousan_kensetsugyo14_hh_000001_00379.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "経済・雇用",
+      "tags": [
+        "建設",
+        "雇用"
+      ],
+      "eventKey": "mlit-construction-labor-202608",
+      "facts": [
+        "全国8職種の過不足率は8月に1.3％の不足。",
+        "前月は1.2％の不足で、不足幅は0.1ポイント拡大した。",
+        "10月と11月の労働者確保見通しは「普通」。"
+      ]
+    },
+    {
+      "title": "「土地区画整理法施行令の一部を改正する政令」を閣議決定",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/toshi08_hh_000083.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "制度",
+      "tags": [
+        "都市",
+        "法令"
+      ],
+      "eventKey": "mlit-land-readjustment-decree-2026",
+      "facts": [
+        "土地区画整理審議会委員選挙で住所全部の公告に支障がある場合、住所の一部の公告で代えることができるようにする。",
+        "公布予定は令和8年9月30日、施行予定は10月1日。"
+      ]
+    },
+    {
+      "title": "チーム印旛沼による緊急排水等オペレーションについて",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/mizukokudo06_hh_000362.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "防災",
+      "tags": [
+        "台風",
+        "千葉"
+      ],
+      "eventKey": "mlit-inbanuma-emergency-drainage",
+      "facts": [
+        "台風第25号による浸水被害を受けて「チーム印旛沼」を結成。",
+        "構成は千葉県、独立行政法人水資源機構、関東地方整備局の3者。",
+        "台風第26号の接近を考慮し、1週間程度を目途に完了を目指す。"
+      ]
+    },
+    {
+      "title": "令和８年８月27日から30日までの間の大雨による災害で被災した河川・道路等の迅速な復旧を支援",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/mizukokudo06_hh_000360.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "防災",
+      "tags": [
+        "大雨",
+        "復旧"
+      ],
+      "eventKey": "mlit-hokuriku-rain-disaster-assessment",
+      "facts": [
+        "対象区域は富山県、石川県、福井県。",
+        "書面査定の上限額は富山県・石川県が4,000万円以下、福井県が2,100万円以下へ引き上げる。",
+        "設計図書の簡素化や机上査定の拡大で復旧手続きを迅速化する。"
+      ]
+    },
+    {
+      "title": "東北自動車道における路車協調実証実験等の実験車両協力者を採択しました",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/road01_hh_002148.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "交通・技術",
+      "tags": [
+        "自動運転",
+        "道路"
+      ],
+      "eventKey": "mlit-tohoku-road-vehicle-cooperation-2026",
+      "facts": [
+        "実証区間は東北自動車道の佐野SAから大谷PA。",
+        "採択事業者はSUBARU、T2、ヤマト運輸。",
+        "検証には合流支援情報や落下物・工事規制等の先読み情報の提供が含まれる。"
+      ]
+    },
+    {
+      "title": "中小物流事業者の労働生産性向上事業費補助金の４次公募開始について",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/tokatsu01_hh_001042.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "物流・経済",
+      "tags": [
+        "物流",
+        "補助金"
+      ],
+      "eventKey": "mlit-logistics-data-subsidy-fourth-call",
+      "facts": [
+        "物流情報標準ガイドラインを活用した共同輸配送や帰り荷確保、輸送経路最適化等を支援する。",
+        "4次公募期間は令和8年9月25日14時から10月23日17時まで。",
+        "複数事業者が連携する物流・商流情報のオープンプラットフォーム構築・運営等の経費の一部を補助する。"
+      ]
+    },
+    {
+      "title": "令和8年台風第25号による被害状況等について",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/saigai/saigai_260920.html",
+      "publishedAt": "2026-09-27T10:00:00+09:00",
+      "category": "防災",
+      "tags": [
+        "台風",
+        "災害"
+      ],
+      "eventKey": "mlit-typhoon25-damage-report-11",
+      "facts": [
+        "国土交通省の台風第25号被害状況ページでは第11報が掲載されている。",
+        "第11報は2026年9月27日10時00分時点。"
+      ]
+    },
+    {
+      "title": "「令和８年度環境課題の統合的解決に向けたモデル支援事業」参加企業の決定について",
+      "sourceName": "環境省",
+      "sourceUrl": "https://www.env.go.jp/press/press_05614.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "環境・企業",
+      "tags": [
+        "脱炭素",
+        "循環経済"
+      ],
+      "eventKey": "moe-integrated-environment-model-support-2026",
+      "facts": [
+        "支援対象として3社を決定した。",
+        "参加企業はキリンホールディングス、清水建設、パナソニックホールディングス。",
+        "炭素中立、循環経済、自然再興など複数の環境課題の統合的取組・開示を後押しする事業。"
+      ]
+    },
+    {
+      "title": "「里海づくり大賞」の募集開始について",
+      "sourceName": "環境省",
+      "sourceUrl": "https://www.env.go.jp/press/press_05620.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "環境",
+      "tags": [
+        "海",
+        "地域"
+      ],
+      "eventKey": "moe-satoumi-award-2026",
+      "facts": [
+        "募集期間は2026年9月25日から11月13日17時まで。",
+        "表彰は「里海づくり大賞（環境大臣賞）」と「審査員特別賞」。",
+        "審査結果は2027年1月の里海づくりシンポジウムで発表予定。"
+      ]
+    },
+    {
+      "title": "神戸港におけるコガネヒアリの確認について",
+      "sourceName": "環境省",
+      "sourceUrl": "https://www.env.go.jp/press/press_05643.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "環境・生物",
+      "tags": [
+        "外来種",
+        "神戸港"
+      ],
+      "eventKey": "moe-kobe-solenopsis-aurea-first-japan",
+      "facts": [
+        "神戸港で確認されたアリがコガネヒアリ（Solenopsis aurea）と同定された。",
+        "日本国内での確認は今回が初めて。",
+        "調査では働きアリ約20,000個体、羽アリ約500個体、無翅女王アリ約20個体などが確認された。"
+      ]
+    },
+    {
+      "title": "国際原子力機関（IAEA）による分析機関間比較の報告書の公表について",
+      "sourceName": "環境省",
+      "sourceUrl": "https://www.env.go.jp/press/press_05624.html",
+      "publishedAt": "2026-09-28T00:00:00+09:00",
+      "category": "環境・科学",
+      "tags": [
+        "IAEA",
+        "海域モニタリング"
+      ],
+      "eventKey": "moe-iaea-ilc-2025-report",
+      "facts": [
+        "IAEAが令和7年の分析機関間比較（ILC）の実施結果をまとめた報告書を公表した。",
+        "令和7年の共同試料採取にはIAEA専門家に加え、フランス、韓国、スイスの分析機関の専門家が参加した。",
+        "ALPS処理水に係る海域モニタリングの裏付けを目的とした別のILC報告書は別途公表予定。"
+      ]
+    },
+    {
+      "title": "環境省「デコ活」は２ndステージへ ～新コンセプト「らくデコ活」及びタイアップ施策が始動！～",
+      "sourceName": "環境省",
+      "sourceUrl": "https://www.env.go.jp/press/press_05618.html",
+      "publishedAt": "2026-09-28T00:00:00+09:00",
+      "category": "環境・生活",
+      "tags": [
+        "脱炭素",
+        "デコ活"
+      ],
+      "eventKey": "moe-decokatsu-second-stage-2026",
+      "facts": [
+        "環境省はデコ活を「2ndステージ」へアップデートした。",
+        "新しいコンセプトワードとして「らくデコ活」を打ち出した。",
+        "デコ活は2050年ネット・ゼロの実現に向けた行動変容・ライフスタイル転換を後押しする取組。"
+      ]
+    },
+    {
+      "title": "「日本スタートアップ大賞2026」の受賞企業が決定しました",
+      "sourceName": "農林水産省",
+      "sourceUrl": "https://www.maff.go.jp/j/press/kanbo/kihyo03/260925.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "農業・技術",
+      "tags": [
+        "スタートアップ",
+        "植物工場"
+      ],
+      "eventKey": "maff-startup-award-2026-oishii-farm",
+      "facts": [
+        "農林水産大臣賞（農業スタートアップ賞）はOishii Farm株式会社。",
+        "計317件の応募から10企業が大臣賞や審査委員会特別賞を受賞。",
+        "Oishii Farmは植物工場でいちごの安定量産とビジネスモデル化を実現したと紹介されている。"
+      ]
+    },
+    {
+      "title": "令和8年度畜産環境シンポジウムの開催について",
+      "sourceName": "農林水産省",
+      "sourceUrl": "https://www.maff.go.jp/j/press/chikusan/c_sinko/260925.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "農業",
+      "tags": [
+        "畜産",
+        "環境"
+      ],
+      "eventKey": "maff-livestock-environment-symposium-2026",
+      "facts": [
+        "シンポジウムは2026年10月21日に開催予定。",
+        "会場参加とオンライン配信のハイブリッド形式。",
+        "第1部のテーマは畜産現場で活かす臭気対策。"
+      ]
+    },
+    {
+      "title": "令和8でん粉年度の「でん粉の需給見通し」について",
+      "sourceName": "農林水産省",
+      "sourceUrl": "https://www.maff.go.jp/j/press/nousan/chiiki/260925.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "農業・統計",
+      "tags": [
+        "でん粉",
+        "需給"
+      ],
+      "eventKey": "maff-starch-demand-forecast-2026",
+      "facts": [
+        "令和8でん粉年度のでん粉需要は237万トンと見通している。",
+        "農林水産省はでん粉の需給見通しを年2回作成している。"
+      ]
+    },
+    {
+      "title": "令和8砂糖年度の「砂糖及び異性化糖の需給見通し」について",
+      "sourceName": "農林水産省",
+      "sourceUrl": "https://www.maff.go.jp/j/press/nousan/chiiki/260925_1.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "農業・統計",
+      "tags": [
+        "砂糖",
+        "需給"
+      ],
+      "eventKey": "maff-sugar-demand-forecast-2026",
+      "facts": [
+        "令和8砂糖年度の分蜜糖消費量は175万トンと見通している。",
+        "異性化糖の消費量は76.5万トンと見通している。",
+        "砂糖年度は10月1日から翌年9月30日まで。"
+      ]
+    },
+    {
+      "title": "「AI時代を見据えたオンチェーン金融フォーラム」について",
+      "sourceName": "金融庁",
+      "sourceUrl": "https://www.fsa.go.jp/news/r8/singi/20260925.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "金融・技術",
+      "tags": [
+        "AI",
+        "ブロックチェーン"
+      ],
+      "eventKey": "fsa-onchain-finance-forum-2026",
+      "facts": [
+        "金融庁は「AI時代を見据えたオンチェーン金融フォーラム」を立ち上げる。",
+        "オンチェーン金融の社会実装や金融機関等におけるAIの健全な利活用の促進に向け、横断的に検討する場。",
+        "オンチェーン金融はブロックチェーン技術を基盤とする。"
+      ]
+    },
+    {
+      "title": "藤井外務大臣政務官の「日韓交流おまつり2026 in Tokyo」開会式出席",
+      "sourceName": "外務省",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/release/pressit_000001_04216.html",
+      "publishedAt": "2026-09-28T00:00:00+09:00",
+      "category": "国際・文化",
+      "tags": [
+        "韓国",
+        "文化交流"
+      ],
+      "eventKey": "mofa-japan-korea-festival-tokyo-2026",
+      "facts": [
+        "「日韓交流おまつり2026 in Tokyo」は2026年9月25日から27日まで東京都内の駐日韓国文化院で開催された。",
+        "9月25日の開会式に藤井一博外務大臣政務官が出席した。",
+        "同イベントは2009年以降、ソウルに加えて東京でも毎年開催されている。"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-28",
+  "region": "japan",
+  "sources": [
+    {
+      "title": "「日本スタートアップ大賞2026」の国土交通スタートアップ賞の受賞者を決定",
+      "sourceName": "国土交通省",
+      "sourceUrl": "https://www.mlit.go.jp/report/press/sogo17_hh_000215.html",
+      "publishedAt": "2026-09-25T00:00:00+09:00",
+      "category": "経済・技術",
+      "tags": [
+        "スタートアップ",
+        "航空",
+        "技術"
+      ],
+      "eventKey": "mlit-startup-award-2026-skydrive",
+      "facts": [
+        "国土交通大臣賞（国土交通スタートアップ賞）の受賞者は株式会社SkyDrive。",
+        "今回は計317件のスタートアップ等から応募が寄せられた。",
+        "株式会社SkyDriveは空飛ぶクルマ（電動垂直離着陸航空機（eVTOL））の開発・製造・販売・運航サービス等を行う。"
+      ]
+    }
+  ]
+}
