@@ -143,3 +143,16 @@ Japan V1 remains **NOT RELEASED**.
 | Preview behavior | Preview can render honest empty states without a database if Preview secrets are absent; production data is not required merely to inspect the UI |
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 19:55 JST — production connection and DB security hardening
+
+| Field | State |
+| --- | --- |
+| Vercel DB compatibility | App now accepts Supabase Integration `POSTGRES_URL` when `DATABASE_URL` is absent or was saved as the literal alias `$POSTGRES_URL` |
+| Security migration | Added `20260928000004_security_hardening.sql` to pin trigger-function `search_path` values and revoke browser-role execution from private functions |
+| Supabase auto-RLS helper | Migration revokes anonymous/authenticated/public execution of `public.rls_auto_enable()` when present |
+| RLS tables | **Not changed**. RLS remains a separate explicit design decision because GlobeQ uses a private non-Data-API schema and server-side SQL |
+| User data | No resets/deletes; additive configuration only |
+
+Japan V1 remains **NOT RELEASED**.

@@ -70,3 +70,12 @@ describe('AI draft boundary',()=>{
     expect(()=>validateGeneratedDraft(source,{...generated,options:generated.options.map(o=>({...o,correct:true}))})).toThrow(/exactly one correct/);
   });
 });
+
+
+describe('deployment environment fallback',()=>{
+  it('keeps runtime DB configuration independent from Vercel alias expansion',()=>{
+    const source=require('node:fs').readFileSync('src/lib/db.ts','utf8');
+    expect(source).toMatch(/POSTGRES_URL/);
+    expect(source).toMatch(/startsWith\('\$'\)/);
+  });
+});
