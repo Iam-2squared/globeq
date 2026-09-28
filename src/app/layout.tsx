@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description: '今日のニュースを4択で学び、出典を読む。GlobeQ by SOLUYRA。',
   applicationName: 'GlobeQ',
   appleWebApp: { capable: true, title: 'GlobeQ', statusBarStyle: 'default' },
+  icons: { apple: [{ url: '/api/apple-touch-icon', sizes: '180x180', type: 'image/png' }] },
   icons: { apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] },
 };
 
