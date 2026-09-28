@@ -111,7 +111,7 @@ try {
   for(let i=0;i<20;i++){
     const q=quiz.questions[i];
     const result=await fetch(web+'/api/answers',{method:'POST',headers:{origin:web,'content-type':'application/json',cookie:session},
-      body:JSON.stringify({questionId:q.id,optionId:q.options.find(option=>option.label==='A').id})});
+      body:JSON.stringify({questionId:q.id,optionId:q.options.find(option=>option.label==='Answer A').id})});
     if(result.status!==200) throw new Error(`Answer ${i+1} ${result.status}: ${await result.text()}`);
     const body=await result.json();
     assert.equal(body.correct,true);assert.equal(body.eligible,true);
