@@ -274,3 +274,21 @@ The release gate is closed for the Japan V1 application itself. The remaining wo
 | Deployment | Changes isolated on `feature/auto-content-first-correct` until CI/migration verification |
 
 The word “first” means the immutable first submitted answer for a question. Historical/noncompetitive study remains excluded from competitive rankings.
+
+
+## 2026-09-28 — mobile latency + quiz spacing optimization
+
+| Field | State |
+| --- | --- |
+| Trigger | iPhone production feedback: tab/page transitions felt laggy; replay button and 1–20 question grid were visually cramped |
+| Vercel | Project config now pins Vercel Functions to Tokyo `hnd1`, colocating server compute with the Tokyo Supabase project |
+| Fonts | Removed runtime Google Fonts `@import`; production now uses the local/system font stack with no render-blocking font request |
+| Quiz load | Public question query begins in parallel with session/auth lookup; live question data remains uncached so correction/withdrawal is immediately visible |
+| Account / Ranking | Independent DB reads are parallelized to reduce sequential network round trips |
+| News | Off-screen cards use `content-visibility:auto` to reduce initial mobile rendering work |
+| Quiz UI | Replay control now has explicit bottom spacing before the 1–20 question grid on mobile |
+| Supabase audit | Security Advisor: **0 lints**. Performance Advisor reports informational unindexed-FK notices; no speculative index migration was applied because the current production ranking query measured about **0.2 ms** and the live dataset is tiny |
+| Verification | PR #4 CI PASS; production Smoke PASS; production Visual Evidence PASS; Vercel deployment SUCCESS |
+| Content integrity | A proposed 5-minute content cache was rejected by E2E because it could briefly retain a withdrawn question; no stale-content cache shipped |
+
+Japan V1 remains **LIVE / OFFICIAL PASS**.
