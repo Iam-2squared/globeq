@@ -44,8 +44,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ m
     </section>
 
     <div className="home-grid">
-      <section className="card streak-card"><span className="eyebrow">KEEP THE MOMENTUM</span><div className="streak-number"><Flame size={37} /> <strong>{data.streak}</strong><span>DAY STREAK</span></div><p>毎日の20問完了で、連続記録を伸ばそう。</p></section>
-      <section className="card progress-card"><span className="eyebrow">TODAY’S PROGRESS</span><div className="progress-number"><strong>{total ? answered : '—'}</strong><span>/ {total || 20}</span></div><p>{total ? answered >= 20 ? answered >= total ? '今日の問題をすべて解きました！' : `20問達成。残り${total - answered}問にも挑戦できます` : `あと${20 - answered}問で今日の20問を達成` : '公開された日に回答数を記録します'}</p></section>
+      <section className="card streak-card"><span className="eyebrow">KEEP THE MOMENTUM</span><div className="streak-number"><Flame size={37} /> <strong>{data.streak}</strong><span>DAY STREAK</span></div><p>その日に公開された問題をすべて完了して、連続記録を伸ばそう。</p></section>
+      <section className="card progress-card"><span className="eyebrow">TODAY’S PROGRESS</span><div className="progress-number"><strong>{total ? answered : '—'}</strong><span>/ {total || '—'}</span></div><p>{total ? answered >= total ? '今日の問題をすべて解きました！' : `あと${total - answered}問で今日の問題を完了` : '公開された日に回答数を記録します'}</p></section>
     </div>
 
     <section className="calendar-section card">
