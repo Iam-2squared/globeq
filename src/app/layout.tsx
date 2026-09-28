@@ -5,6 +5,8 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'GlobeQ | ニュースを、確かな理解に。',
   description: '今日のニュースを4択で学び、出典を読む。GlobeQ by SOLUYRA。',
+  applicationName: 'GlobeQ',
+  appleWebApp: { capable: true, title: 'GlobeQ', statusBarStyle: 'default' },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
