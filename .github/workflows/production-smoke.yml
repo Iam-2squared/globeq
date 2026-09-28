@@ -1,0 +1,99 @@
+name: Production smoke
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Wait for production
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://globeq.vercel.app"
+          ok=0
+          for i in $(seq 1 40); do
+            code="$(curl -sS -o /tmp/home.html -w '%{http_code}' "$BASE/" || true)"
+            if [ "$code" = "200" ]; then ok=1; break; fi
+            echo "attempt $i: HTTP $code"
+            sleep 10
+          done
+          test "$ok" = "1"
+          grep -q "ニュースを" /tmp/home.html
+
+      - name: Read-only production pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://globeq.vercel.app"
+          for item in \
+            "/|TODAY" \
+            "/news|新着ニュース" \
+            "/quiz|今日の20問" \
+            "/ranking|TOP 100" \
+            "/account|新規登録"
+          do
+            path="${item%%|*}"
+            needle="${item#*|}"
+            curl -fsS "$BASE$path" -o /tmp/page.html
+            grep -q "$needle" /tmp/page.html
+          done
+
+      - name: Public question contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS "https://globeq.vercel.app/api/questions?date=2026-09-28" -o /tmp/questions.json
+          node <<'NODE'
+          const fs=require('fs');
+          const body=JSON.parse(fs.readFileSync('/tmp/questions.json','utf8'));
+          if(body.date!=='2026-09-28') throw new Error('wrong date');
+          if(!Array.isArray(body.questions)||body.questions.length!==20) throw new Error('expected 20 questions');
+          for(const q of body.questions){
+            if(!Array.isArray(q.options)||q.options.length!==4) throw new Error('expected four options');
+          }
+          const raw=JSON.stringify(body);
+          for(const forbidden of ['is_correct','isCorrect','correctOption','correctOptionId','explanation','sourceUrl']){
+            if(raw.includes(forbidden)) throw new Error('public payload leaked '+forbidden);
+          }
+          console.log(JSON.stringify({questions:body.questions.length,answerLeak:false}));
+          NODE
+
+      - name: Registration login logout smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://globeq.vercel.app"
+          USERNAME="smoke_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+          PASSWORD="GlobeQ-smoke-${GITHUB_RUN_ID}!"
+
+          code="$(curl -sS -c /tmp/cookies.txt -o /tmp/register.json -w '%{http_code}' \
+            -X POST "$BASE/api/auth/register" \
+            -H "Origin: $BASE" -H "Content-Type: application/json" \
+            --data "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}")"
+          test "$code" = "201"
+
+          curl -fsS -b /tmp/cookies.txt "$BASE/account" -o /tmp/account.html
+          grep -q "$USERNAME" /tmp/account.html
+
+          code="$(curl -sS -b /tmp/cookies.txt -c /tmp/cookies.txt -o /tmp/logout.json -w '%{http_code}' \
+            -X POST "$BASE/api/auth/logout" \
+            -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
+          test "$code" = "200"
+
+          code="$(curl -sS -c /tmp/cookies.txt -o /tmp/login.json -w '%{http_code}' \
+            -X POST "$BASE/api/auth/login" \
+            -H "Origin: $BASE" -H "Content-Type: application/json" \
+            --data "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}")"
+          test "$code" = "200"
+
+          code="$(curl -sS -b /tmp/cookies.txt -o /tmp/logout2.json -w '%{http_code}' \
+            -X POST "$BASE/api/auth/logout" \
+            -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
+          test "$code" = "200"
+
+          echo "SMOKE_USERNAME=$USERNAME"
