@@ -98,7 +98,9 @@ export async function runDailyContent(targetDate=tokyoDate()){
   if(existingDay?.status==='published')return {ok:true,date:targetDate,status:'already-published',published:0};
 
   const [run]=await sql`insert into globeq.automation_runs(local_date,status,note)
-    values(${targetDate},'running','daily OpenAI official-source search started') returning id`;
+    values(${targetDate},'running','daily OpenAI official-source search started')
+    on conflict do nothing returning id`;
+  if(!run)return {ok:true,date:targetDate,status:'already-running',published:0};
   try{
     const [editor]=await sql`select id from globeq.users where username_key='soluyra-editorial' and role='editor'`;
     if(!editor)throw new Error('SOLUYRA Editorial editor principal is missing');
