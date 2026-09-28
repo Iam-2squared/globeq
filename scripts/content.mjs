@@ -52,8 +52,10 @@ async function importDraft() {
       const [position] = await tx`select coalesce(max(position),0)+1 as position from globeq.questions where day_id=${quizDay.id}`;
       const [q] = await tx`insert into globeq.questions(day_id,article_id,event_key,prompt,explanation,difficulty,position)
         values(${quizDay.id},${oldArticle.id},${article.eventKey},${question.prompt},${question.explanation},${question.difficulty},${position.position}) returning id`;
+      const offset = [...article.eventKey].reduce((sum,ch)=>sum+ch.codePointAt(0),0)%4;
+      const shuffled = question.options.map((_,j)=>question.options[(j+offset)%4]);
       for (let j=0;j<4;j++) await tx`insert into globeq.answer_options(question_id,position,label,is_correct)
-        values(${q.id},${j+1},${question.options[j].label},${question.options[j].correct})`;
+        values(${q.id},${j+1},${shuffled[j].label},${shuffled[j].correct})`;
       await tx`insert into globeq.content_events(actor_id,question_id,event_type,note)
         values(${editorId},${q.id},'draft_imported','Manual candidate; requires source and factual review')`;
       created.push(q.id);
