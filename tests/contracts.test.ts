@@ -104,7 +104,7 @@ describe('replay and public ranking boundary',()=>{
     expect(route).toContain('replay: z.boolean()');
     expect(route).toContain('false as eligible');
     const player=require('node:fs').readFileSync('src/components/quiz-player.tsx','utf8');
-    expect(player).toContain('もう一度20問を解く');
+    expect(player).toContain('もう一度すべて解く');
     expect(player).toContain('ランキング・正解率・Streakには影響しません');
   });
 });
