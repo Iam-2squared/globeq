@@ -79,3 +79,12 @@ describe('deployment environment fallback',()=>{
     expect(source).toMatch(/startsWith\('\$'\)/);
   });
 });
+
+
+describe('Japan news freshness window',()=>{
+  it('accepts the previous Friday for a Monday quiz but rejects Thursday',()=>{
+    const row=(published_at)=>({id:'q',status:'reviewed',event_key:'event',option_count:4,correct_count:1,distinct_labels:4,reviewer_id:'editor',rights_checked:true,neutrality_checked:true,verification_note:'Source checked directly by editor.',source_url:'https://source.example/item',published_at:new Date(published_at)});
+    expect(validatePublishRows(Array.from({length:20},(_,i)=>({...row('2026-09-25T00:00:00+09:00'),id:'q'+i,event_key:'e'+i,source_url:'https://source.example/'+i})),'2026-09-28')).toEqual([]);
+    expect(validatePublishRows(Array.from({length:20},(_,i)=>({...row('2026-09-24T23:59:59+09:00'),id:'q'+i,event_key:'e'+i,source_url:'https://source.example/'+i})),'2026-09-28').some(x=>x.includes('outside reviewed news window'))).toBe(true);
+  });
+});

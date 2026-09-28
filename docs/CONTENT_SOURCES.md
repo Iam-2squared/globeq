@@ -20,3 +20,18 @@ The following source is approved for the **manual fact-extraction pilot only**. 
 | 国土交通省 報道発表 | https://www.mlit.go.jp/report/press/ | https://www.mlit.go.jp/link.html | Official page URL, title, publication date, and concise factual propositions independently extracted by an editor; GlobeQ writes its own summary/question | Show 国土交通省, original URL, and identify GlobeQ editing/summary where required | No | **Disabled**; manual pilot only | **Approved for manual pilot** |
 
 Pilot rules: never copy a full release into the model input; do not ingest attached third-party images/PDFs merely because the parent page is usable; record only facts needed to verify one unambiguous question. Automatic connector approval is a separate gate.
+
+
+## Manual pilot approvals — 2026-09-28
+
+These approvals cover **manual source-page review and concise fact extraction only**. Automatic RSS/API crawling remains disabled until a separate connector review. For every item, check page-level exceptions and third-party rights, store no article body, show the official source URL, and identify GlobeQ-authored editing/summary.
+
+| Source | Terms | Manual title/date/URL + concise fact extraction | Automatic feed | Attribution |
+| --- | --- | --- | --- | --- |
+| 国土交通省 | https://www.mlit.go.jp/link.html | **Approved, conditional on item-level exceptions** | Disabled | 出典：国土交通省ウェブサイト（URL）／GlobeQが加工して作成 |
+| 環境省 | https://www.env.go.jp/mail.html | **Approved, conditional on item-level exceptions** | Disabled | 出典：環境省ウェブサイト（URL）／GlobeQが加工して作成 |
+| 農林水産省 | https://www.maff.go.jp/j/use/link.html | **Approved, conditional on item-level exceptions** | Disabled | 出典：農林水産省ウェブサイト（URL）／GlobeQが加工して作成 |
+| 金融庁 | https://www.fsa.go.jp/rules/ | **Approved, conditional on item-level exceptions** | Disabled | 出典：金融庁ウェブサイト（URL）／GlobeQが加工して作成 |
+| 外務省 | https://www.mofa.go.jp/mofaj/annai/legalmatters/index.html | **Approved, conditional on item-level exceptions** | Disabled | 出典：外務省ウェブサイト（URL）／GlobeQが加工して作成 |
+
+All five sites state that their content is generally usable under PDL1.0 unless otherwise indicated. This is not a blanket approval for third-party images, attached documents, logos, externally-owned text, or a different feed-specific rule.

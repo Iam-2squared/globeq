@@ -14,7 +14,8 @@ export function validatePublishRows(rows, date) {
     if (events.has(row.event_key)) issues.push(`${row.id}: duplicate event`);
     events.add(row.event_key);
     const published = new Date(row.published_at);
-    const min = new Date(`${date}T00:00:00+09:00`).getTime() - 2 * 86400000;
+    // Allow the Friday -> Monday/weekend editorial window while keeping older news out of the daily set.
+    const min = new Date(`${date}T00:00:00+09:00`).getTime() - 3 * 86400000;
     const max = new Date(`${date}T23:59:59+09:00`).getTime();
     if (Number.isNaN(published.getTime()) || published.getTime() < min || published.getTime() > max || published.getTime() > Date.now())
       issues.push(`${row.id}: article publication date is outside reviewed news window`);

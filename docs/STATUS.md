@@ -156,3 +156,17 @@ Japan V1 remains **NOT RELEASED**.
 | User data | No resets/deletes; additive configuration only |
 
 Japan V1 remains **NOT RELEASED**.
+
+
+## 2026-09-28 20:05 JST — physical iPhone UI evidence and 20-source fact pack
+
+| Field | State |
+| --- | --- |
+| Physical UI | User supplied iPhone Safari screenshots for Home / News / Quiz / Ranking / Account; all 5 tabs rendered and bottom navigation remained usable |
+| Visual boundary | Preview showed honest empty/pre-release states; Account correctly showed DB-not-configured in Preview because production secrets were not copied to Preview |
+| Content research | Prepared `fixtures/japan-20-source-facts-20260928.json` with 20 distinct official events from MLIT, MOE, MAFF, FSA and MOFA |
+| Rights register | Five official websites added as manual-only PDL1.0 pilots; item-level exceptions and third-party rights still checked per item; automatic feeds remain disabled |
+| Freshness gate | Expanded from 2 to 3 Tokyo calendar days so Friday official releases can support a Monday daily set; older Thursday material remains blocked |
+| Publish state | Source facts only. **0 questions imported, 0 questions reviewed, 0 questions published** |
+
+Japan V1 remains **NOT RELEASED**.
