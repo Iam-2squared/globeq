@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 22
       - name: Offline safety tests (no API or DB)
-        run: node --test scripts/luna-pilot/runner.test.mjs
+        run: node --test scripts/luna-pilot/safety-checks.mjs
       - name: Credential preflight (never print the key)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
