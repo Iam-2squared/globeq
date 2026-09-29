@@ -1,0 +1,88 @@
+{
+  "checkpoint_date_jst": "2026-09-29",
+  "repository": "Iam-2squared/globeq",
+  "baseline_main": "32869007e0140ab05a3313fbff6475dbb77d61a1",
+  "implementation_head": "7eb41d9da8ec6dde3b43ad8d020ce1669f51f903",
+  "decision": "limited_operational_replacement_approved_pending_final_ci_and_deployment",
+  "model": "gpt-6-luna",
+  "additional_sol_requests": 0,
+  "luna_quality_review_requests": 3,
+  "production_model_requests_during_review": 0,
+  "production_writes_during_review": 0,
+  "prior_findings_retained": {
+    "stage1_candidates": 2,
+    "stage1_existing_source_duplicates": 2,
+    "stage2_candidates": 2,
+    "stage2_context_dependent_prompt_rejected": 1,
+    "stage2_source_link_mismatch": false,
+    "note": "The MHLW source URL was independently HTTP200 and its October5 answer matched. It was rejected for missing standalone context, not an invented or broken URL. No original draft was silently repaired and counted as model PASS."
+  },
+  "final_trial": {
+    "run_id": 36526769066,
+    "head": "44f400f23b62d194adf0d23b2f02c550e15767ea",
+    "artifact_id": 11015255923,
+    "artifact_zip_sha256": "9658d7c728a66d91e0a6fdbab1cb22a1da8565b5fd3238d3720b3b86241c045a",
+    "observed_at": "2026-09-29T05:34:24.337Z",
+    "candidates": 4,
+    "mechanical_pass": 4,
+    "source_correct_answer_matches": 4,
+    "explanation_and_summary_matches": 4,
+    "standalone_question_pass": 4,
+    "same_source_publication_date_matches": 4,
+    "historical_duplicate_matches": 0,
+    "easy": 2,
+    "normal": 2,
+    "hard": 0,
+    "web_tool_calls": 5,
+    "search_actions": 1,
+    "input_tokens": 51629,
+    "cache_write_tokens": 5754,
+    "cached_tokens": 0,
+    "output_tokens": 1889,
+    "model_cost_estimate_usd": 0.00625125,
+    "all_web_actions_charged_upper_estimate_usd": 0.05625125,
+    "thirty_identical_trials_upper_estimate_usd": 1.6875375,
+    "invoice_verified": false,
+    "sources": [
+      {"url":"https://www.maff.go.jp/j/press/kanbo/joho/260929.html","http_status":200,"source_date":"2026-09-29","topic":"application service renewal","fact_match":true},
+      {"url":"https://www.maff.go.jp/j/press/shokuhin/recycle/260929.html","http_status":200,"source_date":"2026-09-29","topic":"food industry award","fact_match":true},
+      {"url":"https://www.env.go.jp/press/press_05594.html","http_status":200,"source_date":"2026-09-29","topic":"food loss promotion award","fact_match":true},
+      {"url":"https://www.env.go.jp/press/press_05593.html","http_status":200,"source_date":"2026-09-29","topic":"food loss awareness month","fact_match":true}
+    ]
+  },
+  "independent_source_evidence": {
+    "content_and_rights_run": 36526995990,
+    "content_and_rights_artifact": 11015096506,
+    "content_and_rights_sha256": "1de6ecc8eeba477d955dc7d140259ff4e0f7a5d13a6bf3fea3536ad02455bb0e",
+    "source_date_run": 36527664625,
+    "source_date_artifact": 11014908275,
+    "source_date_sha256": "7010be6ee1fe8418d1fb38fa84eeacb9c7c621384864dfc79319cda0d26ffc74",
+    "source_date_observed_at": "2026-09-29T05:45:32.955Z",
+    "terms": ["https://www.maff.go.jp/j/use/link.html","https://www.env.go.jp/mail.html"],
+    "rights_scope": "Original short factual text, source attribution and editing notice; no reuse of source logos, images, third-party attachments or whole article bodies. No item-specific exception affecting the facts used was found on the fetched source pages.",
+    "method": "Independent fixed official-page HTTP reads without model credentials; source dates before the ENV h1 were checked in a separate metadata extraction. Encrypted draft originals retained; public record contains no answer keys."
+  },
+  "comparison_limits": [
+    "Final sample four, with two easy and two normal; no hard-quality conclusion.",
+    "Three items share a food-loss theme despite distinct events; topic diversity not established.",
+    "Existing Sep29 sixteen questions and official source pages were read; same-source Sep28 editorial examples are not attested Sol outputs.",
+    "No statistical model equivalence claim. Different prompts, time and tool limits preclude a controlled Sol-versus-Luna experiment.",
+    "Eight-tool cap may reduce daily question count. One-to-100 with no minimum quota is preserved.",
+    "Automatic production validators remain mechanical safeguards, not independent fact verification for every future item.",
+    "Cost is usage-based and conservative for web actions, not an invoice or guaranteed monthly spending cap."
+  ],
+  "implementation_verification_before_evidence_commit": {
+    "application_ci_run": 36528075226,
+    "application_ci": "success",
+    "typecheck_tests_build_isolated_e2e": "success",
+    "vercel_preview_commit_status": "success",
+    "installed_route_reference_read": true
+  },
+  "preservation_before_deployment": {
+    "sep28_published": 20,
+    "sep29_published": 16,
+    "question_content_fingerprint": "9b8ab045edc0d873e31975d6292bb3af",
+    "user_answers_count": 67
+  },
+  "next": "Verify final CI/Preview, merge with expected head, verify exact production policy plus smoke/visual and unchanged content fingerprint. Do not rerun Sep29 production publishing or conduct another paid trial."
+}
