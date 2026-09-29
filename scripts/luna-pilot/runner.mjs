@@ -1,7 +1,7 @@
 /** Isolated one-request pilot. Never calls runDailyContent or a database. */
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
+import { createRequire, stripTypeScriptTypes } from 'node:module';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import vm from 'node:vm';
@@ -63,10 +63,20 @@ export async function loadGenerator({ apiKey, transport, root = process.cwd() })
   const source = await readFile(resolve(root, 'src/lib/daily-content.ts'), 'utf8');
   if (gitBlobHash(source) !== SOURCE_BLOB) throw new Error('SOURCE_CHANGED_REVIEW_REQUIRED');
   const require = createRequire(resolve(root, 'package.json'));
-  const ts = require('typescript');
-  const compiled = ts.transpileModule(source + '\nexport { searchAndDraft, validateItem };\n', {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-  }).outputText;
+  // TypeScript 7's installed module does not provide the compiler API used by the
+  // original harness. Strip types with Node, adapting only this hash-pinned
+  // module's two imports and one export; all generation/validation code is kept.
+  let compiled = stripTypeScriptTypes(source, { mode: 'strip' });
+  const replacements = [
+    ["import { z } from 'zod';", "const { z } = require('zod');"],
+    ["import { db } from '@/lib/db';", "const { db } = require('@/lib/db');"],
+    ['export async function runDailyContent(', 'async function runDailyContent('],
+  ];
+  for (const [before, after] of replacements) {
+    if (compiled.split(before).length !== 2) throw new Error('UNEXPECTED_MODULE_LAYOUT');
+    compiled = compiled.replace(before, after);
+  }
+  compiled += '\nexports.searchAndDraft = searchAndDraft; exports.validateItem = validateItem;\n';
   const exports = {};
   const sandbox = {
     exports,
