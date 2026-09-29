@@ -10,6 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      - name: Verify exact deployed Luna-only policy without generating content
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for i in $(seq 1 40); do
+            if curl -fsS --max-time 15 "https://globeq.vercel.app/api/health/daily-content" -o /tmp/daily-policy.json; then
+              if node -e "const p=require('/tmp/daily-policy.json');if(p.model!=='gpt-6-luna'||p.revision!=='luna-reviewed-20260929-v1'||p.automaticFallback!==false||p.automaticRetry!==false||p.maxToolCalls!==8||p.maxOutputTokens!==16000||p.deploymentCommit!==process.env.GITHUB_SHA)process.exit(1)"; then ok=1; break; fi
+            fi
+            sleep 10
+          done
+          test "$ok" = "1"
+          cat /tmp/daily-policy.json
+
       - name: Wait for production
         shell: bash
         run: |
@@ -89,7 +103,7 @@ jobs:
           echo "login -> $code"
           test "$code" = "200"
 
-          code="$(curl -sS -b /tmp/cookies.txt -o /tmp/logout2.json -w '%{http_code}' \
+          code="$(curl -sS -b /tmp/cookies.txt -c /tmp/cookies.txt -o /tmp/logout2.json -w '%{http_code}' \
             -X POST "$BASE/api/auth/logout" -H "Origin: $BASE" -H "Content-Type: application/json" --data '{}')"
           echo "final logout -> $code"
           test "$code" = "200"
