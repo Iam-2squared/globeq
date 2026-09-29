@@ -10,6 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Wait for exact deployed Luna-only policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for i in $(seq 1 40); do
+            if curl -fsS --max-time 15 "https://globeq.vercel.app/api/health/daily-content" -o /tmp/daily-policy.json; then
+              if node -e "const p=require('/tmp/daily-policy.json');if(p.revision!=='luna-reviewed-20260929-v1'||p.model!=='gpt-6-luna'||p.automaticFallback!==false||p.deploymentCommit!==process.env.GITHUB_SHA)process.exit(1)"; then ok=1; break; fi
+            fi
+            sleep 10
+          done
+          test "$ok" = "1"
+
       - name: Install Playwright
         run: |
           npm install --no-save --package-lock=false playwright@1.55.0
@@ -28,7 +41,7 @@ jobs:
           const base='https://globeq.vercel.app';
           const pages=[['home','/'],['news','/news'],['quiz','/quiz'],['ranking','/ranking'],['account','/account']];
           fs.mkdirSync('production-visual',{recursive:true});
-          const evidence=[];
+          const evidence=[{dailyPolicy:JSON.parse(fs.readFileSync('/tmp/daily-policy.json','utf8'))}];
           for(const [name,path] of pages){
             const response=await page.goto(base+path,{waitUntil:'networkidle',timeout:60000});
             if(!response || response.status()!==200) throw new Error(name+' HTTP '+response?.status());
