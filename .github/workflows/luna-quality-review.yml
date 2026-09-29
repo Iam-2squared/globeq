@@ -1,0 +1,42 @@
+name: Luna encrypted quality review
+on:
+  push:
+    branches: [test/luna-pilot-20260929]
+    paths: ['.github/workflows/luna-quality-review.yml']
+permissions:
+  contents: read
+concurrency:
+  group: globeq-luna-pilot-20260929
+  cancel-in-progress: false
+jobs:
+  review:
+    if: github.run_attempt == 1 && contains(github.event.head_commit.message, '[luna-quality-once]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Offline encryption, safety and cost tests
+        run: node --test scripts/luna-pilot/safety-checks.mjs scripts/luna-pilot/quality-checks.mjs
+      - name: Install locked dependencies without credential
+        run: npm ci
+      - name: Actual pinned loader integration without network or DB
+        run: node --test scripts/luna-pilot/loader-checks.mjs
+      - name: One Luna request; encrypt unpublished output; never call Sol
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node scripts/luna-pilot/quality-review.mjs
+      - name: Encrypted payload and sanitized metrics only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: luna-quality-review-${{ github.run_id }}
+          path: |
+            quality-metrics.json
+            quality-payload.encrypted.json
+          if-no-files-found: ignore
+          retention-days: 7
