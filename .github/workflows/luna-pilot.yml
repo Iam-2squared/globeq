@@ -1,4 +1,4 @@
-# 2026-09-29 13:34 JST: owner confirmed secret setup; authorize one isolated trial.
+# 2026-09-29 JST: prior attempt used zero model calls; run offline loader checks first.
 name: Luna isolated pilot
 on:
   push:
@@ -41,14 +41,8 @@ jobs:
           JS
       - name: Install pinned project dependencies (no API key in this step)
         run: npm ci
-      - name: Verify pinned generator loads without database access
-        run: |
-          node --input-type=module <<'JS'
-          import { loadGenerator } from './scripts/luna-pilot/runner.mjs';
-          const generator = await loadGenerator({apiKey:'test-only-not-real', transport:()=>{throw new Error('NETWORK_BLOCKED');}});
-          if (typeof generator.generate !== 'function' || typeof generator.validate !== 'function') throw new Error('LOAD_FAILED');
-          console.log('Pinned production generator loaded; no live request or database connection.');
-          JS
+      - name: Real loader integration checks (mock HTTP only; no API or DB)
+        run: node --test scripts/luna-pilot/loader-checks.mjs
       - name: One unpublished GPT-6 Luna request (no retry)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
