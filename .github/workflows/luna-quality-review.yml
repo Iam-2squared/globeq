@@ -1,4 +1,4 @@
-name: Luna encrypted quality review with exclusions
+name: Luna final standalone quality review
 on:
   push:
     branches: [test/luna-pilot-20260929]
@@ -20,13 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Offline encryption, safety, cost and exclusion tests
-        run: node --test scripts/luna-pilot/safety-checks.mjs scripts/luna-pilot/quality-checks.mjs scripts/luna-pilot/quality-exclusion-checks.mjs
+      - name: Offline encryption, safety, cost, exclusion and context tests
+        run: node --test scripts/luna-pilot/safety-checks.mjs scripts/luna-pilot/quality-checks.mjs scripts/luna-pilot/quality-exclusion-checks.mjs scripts/luna-pilot/quality-context-checks.mjs
       - name: Install locked dependencies without credential
         run: npm ci
       - name: Actual pinned loader integration without network or DB
         run: node --test scripts/luna-pilot/loader-checks.mjs
-      - name: One Luna request; encrypt unpublished output; never call Sol
+      - name: One final Luna request; never call Sol or publish
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: node scripts/luna-pilot/quality-review.mjs

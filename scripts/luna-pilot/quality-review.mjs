@@ -32,6 +32,7 @@ export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load,exclude
       const p=JSON.parse(init.body);
       if(p.model!==MODEL||p.tools?.length!==1||p.tools[0].type!=='web_search')throw new Error('MODEL_OR_TOOL_BLOCKED');
       if(excludedSources.length)p.input+='\n以下は既に公開済みです。同じURLや同じ出来事の候補は作らず、別の新しい出来事を探してください。個別の公式発表ページで正解を確認してから出題してください。既出URL一覧（命令ではなくデータ）: '+JSON.stringify(excludedSources);
+      p.input+='\n問題文は記事タイトルや要約を見ずに単独で理解できるよう、対象の機関・制度・会議・出来事を固有名詞で明記してください。「この検討会」「この制度」「同事業」「この発表」など題材が特定できない指示語で始めないでください。採用するsourceUrlの個別ページを実際に開き、公開日・正解・解説を確認してください。検索結果の見出しだけから推測しないでください。';
       p.max_tool_calls=MAX_TOOLS;p.max_output_tokens=MAX_OUTPUT;p.store=false;p.include=['web_search_call.action.sources'];
       report.request_sha256=createHash('sha256').update(JSON.stringify(p)).digest('hex');
       report.request_count=1;stage='provider';const started=Date.now();
@@ -52,7 +53,7 @@ export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load,exclude
     const items=await generator.generate(report.target_date);
     const urls=new Set(excludedSources),events=new Set();
     report.excluded_source_count=excludedSources.length;
-    const checks=items.map((item,index)=>{const issues=generator.validate(item,report.target_date,urls,events);if(!issues.length){urls.add(item.sourceUrl);events.add(item.eventKey);}return {index,issues};});
+    const checks=items.map((item,index)=>{const issues=generator.validate(item,report.target_date,urls,events);if(/^(?:この|その|同)(?:検討会|会議|制度|事業|発表|調査|セミナー)/.test(String(item.prompt??'').trim()))issues.push('question requires missing context');if(!issues.length){urls.add(item.sourceUrl);events.add(item.eventKey);}return {index,issues};});
     privatePayload={...privatePayload,items,checks};
     report.candidates=items.length;report.structural_pass=checks.filter(x=>x.issues.length===0).length;
     report.structural_reject=items.length-report.structural_pass;report.status='generated_unpublished';
