@@ -1,0 +1,26 @@
+name: Official source read-only audit
+on:
+  push:
+    branches: [test/luna-pilot-20260929]
+    paths: ['.github/workflows/source-read-check.yml']
+permissions:
+  contents: read
+jobs:
+  read:
+    if: github.run_attempt == 1 && contains(github.event.head_commit.message, '[source-read-once]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read fixed official URLs; no API or DB credentials
+        run: node scripts/luna-pilot/source-read-check.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-source-audit-${{ github.run_id }}
+          path: source-read-report.json
+          retention-days: 7
