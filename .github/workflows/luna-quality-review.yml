@@ -1,4 +1,4 @@
-name: Luna encrypted quality review
+name: Luna encrypted quality review with exclusions
 on:
   push:
     branches: [test/luna-pilot-20260929]
@@ -20,8 +20,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Offline encryption, safety and cost tests
-        run: node --test scripts/luna-pilot/safety-checks.mjs scripts/luna-pilot/quality-checks.mjs
+      - name: Offline encryption, safety, cost and exclusion tests
+        run: node --test scripts/luna-pilot/safety-checks.mjs scripts/luna-pilot/quality-checks.mjs scripts/luna-pilot/quality-exclusion-checks.mjs
       - name: Install locked dependencies without credential
         run: npm ci
       - name: Actual pinned loader integration without network or DB

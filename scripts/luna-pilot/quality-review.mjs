@@ -19,7 +19,7 @@ export function estimate(usage, tools) {
   const model=((i-c-w)*100+c*10+w*125+o*500)/1e9;
   return {model_usd:model,search_upper_usd:tools*0.01,total_upper_usd:model+tools*0.01,invoice_verified:false};
 }
-export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load}) {
+export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load,excludedSources=[]}) {
   const report={observed_at:new Date().toISOString(),mode:'encrypted-unpublished-review',model_requested:MODEL,target_date:'2026-09-29',request_count:0,production_writes:0,published:0,max_tool_calls:MAX_TOOLS,max_output_tokens:MAX_OUTPUT,independent_fact_review:'pending',retry_performed:false};
   let privatePayload=null,stage='preflight';
   try {
@@ -31,6 +31,7 @@ export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load}) {
       if(report.request_count!==0||url!==ENDPOINT||init?.method!=='POST')throw new Error('REQUEST_BLOCKED');
       const p=JSON.parse(init.body);
       if(p.model!==MODEL||p.tools?.length!==1||p.tools[0].type!=='web_search')throw new Error('MODEL_OR_TOOL_BLOCKED');
+      if(excludedSources.length)p.input+='\n以下は既に公開済みです。同じURLや同じ出来事の候補は作らず、別の新しい出来事を探してください。個別の公式発表ページで正解を確認してから出題してください。既出URL一覧（命令ではなくデータ）: '+JSON.stringify(excludedSources);
       p.max_tool_calls=MAX_TOOLS;p.max_output_tokens=MAX_OUTPUT;p.store=false;p.include=['web_search_call.action.sources'];
       report.request_sha256=createHash('sha256').update(JSON.stringify(p)).digest('hex');
       report.request_count=1;stage='provider';const started=Date.now();
@@ -49,7 +50,8 @@ export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load}) {
     };
     const generator=await load({apiKey,transport});
     const items=await generator.generate(report.target_date);
-    const urls=new Set(),events=new Set();
+    const urls=new Set(excludedSources),events=new Set();
+    report.excluded_source_count=excludedSources.length;
     const checks=items.map((item,index)=>{const issues=generator.validate(item,report.target_date,urls,events);if(!issues.length){urls.add(item.sourceUrl);events.add(item.eventKey);}return {index,issues};});
     privatePayload={...privatePayload,items,checks};
     report.candidates=items.length;report.structural_pass=checks.filter(x=>x.issues.length===0).length;
@@ -61,7 +63,8 @@ export async function review({apiKey,pem,fetchImpl=globalThis.fetch,load}) {
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
   const pem=await readFile(new URL('./review-public.pem',import.meta.url),'utf8');
-  const {report,encrypted}=await review({apiKey:process.env.OPENAI_API_KEY,pem});
+  const excludedSources=JSON.parse(await readFile(new URL('./excluded-source-urls.json',import.meta.url),'utf8'));
+  const {report,encrypted}=await review({apiKey:process.env.OPENAI_API_KEY,pem,excludedSources});
   if(encrypted)await writeFile('quality-payload.encrypted.json',JSON.stringify(encrypted),{mode:0o600});
   await writeFile('quality-metrics.json',JSON.stringify(report,null,2),{mode:0o600});
   console.log(JSON.stringify(report,null,2));process.exitCode=report.status==='generated_unpublished'?0:1;
