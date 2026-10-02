@@ -132,7 +132,7 @@ try {
   const homeResponse=await fetch(web+'/',{headers:{cookie:session}});
   const home=await homeResponse.text();
   if(homeResponse.status!==200) throw new Error(`Home ${homeResponse.status}: ${logs.slice(-1700)}`);
-  if(!/20 \/ 20/.test(home)) throw new Error(`Home progress missing: ${home.slice(0,250)}`);
+  if(!/現在準備中です/.test(home)) throw new Error(`Preparing home state missing: ${home.slice(0,250)}`);
   const account=await (await fetch(web+'/account',{headers:{cookie:session}})).text();
   assert.match(account,/FixtureLearner/);
   const ranking=await (await fetch(web+'/ranking?type=weekly',{headers:{cookie:session}})).text();
