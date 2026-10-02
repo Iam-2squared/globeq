@@ -1,0 +1,41 @@
+name: Source date and installed framework reference
+on:
+  push:
+    branches: [test/luna-pilot-20260929]
+    paths: ['.github/workflows/source-date-confirm.yml']
+permissions:
+  contents: read
+jobs:
+  confirm:
+    if: github.run_attempt == 1 && contains(github.event.head_commit.message, '[date-check-once]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Date excerpts only, no model credentials
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFile} from 'node:fs/promises';
+          const urls=['https://www.env.go.jp/press/press_05594.html','https://www.env.go.jp/press/press_05593.html'];const rows=[];
+          for(const url of urls){const row={url};try{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(12000)});row.status=r.status;if(r.ok){const reader=r.body.getReader();const parts=[];let bytes=0;while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.length;if(bytes>512000){await reader.cancel();break;}parts.push(value);}const html=Buffer.concat(parts).toString('utf8');row.timeTags=[...html.matchAll(/<time[^>]*>[\s\S]*?<\/time>/g)].slice(0,8).map(m=>m[0]);row.dateContext=[...html.matchAll(/.{0,70}(?:2026年|2026-|令和８年|令和8年)[\s\S]{0,80}/g)].slice(0,12).map(m=>m[0]);}}catch{row.error='not_verified';}rows.push(row);}await writeFile('date-confirm.json',JSON.stringify({observed_at:new Date().toISOString(),rows},null,2));
+          JS
+      - name: Install locked framework without credentials
+        run: npm ci
+      - name: Read installed route-handler reference
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';import path from 'node:path';const root='node_modules/next/dist/docs';let found=[];function walk(p){if(!fs.existsSync(p))return;for(const e of fs.readdirSync(p,{withFileTypes:true})){const f=path.join(p,e.name);if(e.isDirectory())walk(f);else if(/route(?:-handlers)?\.(?:md|mdx)$/.test(e.name))found.push(f);}}walk(root);const entries=found.slice(0,3).map(p=>({path:p,text:fs.readFileSync(p,'utf8').slice(0,24000)}));fs.writeFileSync('installed-route-reference.json',JSON.stringify(entries,null,2));console.log(found);
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: source-date-confirm-${{ github.run_id }}
+          path: |
+            date-confirm.json
+            installed-route-reference.json
+          retention-days: 7

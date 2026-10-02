@@ -1,0 +1,58 @@
+# 2026-09-29 JST: prior attempt used zero model calls; run offline loader checks first.
+name: Luna isolated pilot
+on:
+  push:
+    branches: [test/luna-pilot-20260929]
+    paths: ['.github/workflows/luna-pilot.yml']
+permissions:
+  contents: read
+concurrency:
+  group: globeq-luna-pilot-20260929
+  cancel-in-progress: false
+jobs:
+  pilot:
+    if: github.run_attempt == 1 && contains(github.event.head_commit.message, '[luna-live-once]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Offline safety tests (no API or DB)
+        run: node --test scripts/luna-pilot/safety-checks.mjs
+      - name: Credential preflight (never print the key)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          node --input-type=module <<'JS'
+          import { writeFileSync } from 'node:fs';
+          const available = Boolean(process.env.OPENAI_API_KEY);
+          if (!available) {
+            const report = {status:'blocked_missing_api_key', observed_at:new Date().toISOString(), request_count:0, production_writes:0, published:0};
+            writeFileSync('luna-pilot-report.json', JSON.stringify(report,null,2));
+            console.log(JSON.stringify(report));
+            process.exitCode=1;
+          } else {
+            console.log('Credential present; value not displayed.');
+          }
+          JS
+      - name: Install pinned project dependencies (no API key in this step)
+        run: npm ci
+      - name: Real loader integration checks (mock HTTP only; no API or DB)
+        run: node --test scripts/luna-pilot/loader-checks.mjs
+      - name: One unpublished GPT-6 Luna request (no retry)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LUNA_TARGET_DATE: '2026-09-29'
+        run: node scripts/luna-pilot/runner.mjs
+      - name: Store sanitized metrics only (no question text, answer keys or secrets)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: luna-pilot-metrics-${{ github.run_id }}
+          path: luna-pilot-report.json
+          if-no-files-found: ignore
+          retention-days: 7

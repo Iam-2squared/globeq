@@ -1,0 +1,29 @@
+{
+  "checkpoint_date_jst": "2026-09-29",
+  "credential_preflight_observed_at": "2026-09-29T04:01:45.552Z",
+  "credential_preflight_observed_at_jst": "2026-09-29T13:01:45.552+09:00",
+  "repository": "Iam-2squared/globeq",
+  "baseline_main": "32869007e0140ab05a3313fbff6475dbb77d61a1",
+  "pilot_head": "8b7dda92acb62d619e22552d23cb214b1f61000f",
+  "pull_request": 16,
+  "pilot_run_id": 36519750949,
+  "pilot_job_id": 109249799427,
+  "status": "blocked_missing_api_key",
+  "live_model_request_count": 0,
+  "new_api_generation_charge_usd": 0,
+  "production_writes": 0,
+  "published": 0,
+  "production_model_switched": false,
+  "offline_safety_tests": {"passed": 9, "failed": 0, "verified": ["local", "GitHub pilot job"]},
+  "original_pr_ci": {
+    "run_id": 36519782137,
+    "status": "failed",
+    "existing_app_tests_passed": 18,
+    "cause": "Vitest discovered a node:test file as a Vitest suite (No test suite found).",
+    "correction": "Rename standalone Node safety suite to safety-checks.mjs; keep all nine assertions and the explicit node --test workflow command.",
+    "followup_ci": "must_verify_after_this_commit"
+  },
+  "vercel_access": "403 for authorized connector team scope; no workaround attempted",
+  "limitations": ["Luna API availability for this project not tested", "No generated content or measured usage", "No monthly operating cost measurement", "Production environment override not inspected"],
+  "next": "Owner configures OPENAI_API_KEY securely as a GlobeQ repository Actions secret; deliberate new one-shot trial only after that. No auto-retry, no production merge."
+}

@@ -1,0 +1,11 @@
+{
+ "observed_at":"2026-09-29T05:19:56.267Z","run_id":36525638576,"commit":"b708e622aec8b2538b256e7236412907ca6390a3",
+ "artifact_id":11014677033,"artifact_sha256":"b30e48dd03856c3d1330a9c37c184ec36f5dace1ef9df0305aac5218f84627a1",
+ "model":"gpt-6-luna","requests":1,"web_calls":2,"input_tokens":22423,"cache_write_tokens":5635,"output_tokens":1070,
+ "candidates":2,"mechanical_pass":2,"historical_url_duplicates":0,"standalone_context_defect":1,
+ "cost_upper_estimate_usd":0.022918175,"invoice_verified":false,
+ "source_http_audit_run":36526215575,"source_http_artifact_id":11015145183,"source_http_sha256":"569ae2464d9a1cace6638fe48291783229535478ff3cb788236c78d0e17c6794",
+ "source_http_results":"Both exact candidate URLs return 200 and matching meeting titles. The women's-meeting URL differed from web search's alternate URL but is NOT a proven broken or invented link. Specific date at that URL still needs focused extraction.",
+ "quality_decision":"Not raw-output PASS: the second prompt uses this meeting without naming the meeting, and the quiz UI hides article context until answering. Reject this candidate rather than silently rewriting it.",
+ "next":"Final bounded Luna trial adds standalone-question and source-page-opening instructions plus a context rejection guard. No more automatic trials afterwards. No Sol or production writes."
+}

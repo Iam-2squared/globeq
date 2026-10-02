@@ -1,0 +1,50 @@
+name: Final official source review
+on:
+  push:
+    branches: [test/luna-pilot-20260929]
+    paths: ['.github/workflows/source-final-review.yml']
+permissions:
+  contents: read
+jobs:
+  read:
+    if: github.run_attempt == 1 && contains(github.event.head_commit.message, '[source-final-once]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read exact candidate sources and registered terms
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFile} from 'node:fs/promises';
+          const urls=[
+          'https://www.maff.go.jp/j/press/kanbo/joho/260929.html',
+          'https://www.maff.go.jp/j/press/shokuhin/recycle/260929.html',
+          'https://www.env.go.jp/press/press_05594.html',
+          'https://www.env.go.jp/press/press_05593.html',
+          'https://www.mhlw.go.jp/stf/newpage_76305.html',
+          'https://www.mhlw.go.jp/chosakuken/index.html',
+          'https://www.mofa.go.jp/mofaj/annai/legalmatters/index.html',
+          'https://www.maff.go.jp/j/use/link.html',
+          'https://www.env.go.jp/mail.html'];
+          const clean=s=>s.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+          const rows=[];
+          for(const url of urls){const row={url};try{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(12000)});row.status=r.status;if(!r.ok){await r.body?.cancel();rows.push(row);continue;}const reader=r.body.getReader();let total=0,parts=[];while(true){const {done,value}=await reader.read();if(done)break;total+=value.length;if(total>512000){await reader.cancel();row.truncated=true;break;}parts.push(value);}const html=Buffer.concat(parts).toString('utf8');row.title=clean(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]??'');row.heading=clean(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]??'');const main=html.match(/<h1[^>]*>[\s\S]*$/i)?.[0]??html;row.excerpt=clean(main).slice(0,4300);row.exception_mentions=[...clean(main).matchAll(/.{0,40}(?:無断転載|利用禁止|第三者|著作権).{0,80}/g)].slice(0,8).map(x=>x[0]);}catch{row.error='NOT_VERIFIED';}rows.push(row);}
+          await writeFile('final-source-review.json',JSON.stringify({observed_at:new Date().toISOString(),model_requests:0,rows},null,2));
+          console.log(JSON.stringify(rows.map(({url,status,title,error})=>({url,status,title,error})),null,2));
+          JS
+      - name: Bundle public source snapshot for local diff review
+        run: |
+          git archive HEAD src/lib src/app/api/cron/daily-content .github/workflows/production-smoke.yml .github/workflows/production-visual.yml .github/workflows/ci.yml tests docs/STATUS.md docs/SPEC.md docs/OPERATIONS.md package.json package-lock.json tsconfig.json AGENTS.md next.config.ts vercel.ts > public-source-snapshot.tar
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: final-source-review-${{ github.run_id }}
+          path: |
+            final-source-review.json
+            public-source-snapshot.tar
+          retention-days: 7
