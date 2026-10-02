@@ -67,7 +67,11 @@ describe('reviewed Luna-only production policy',()=>{
    expect(JSON.stringify(p)).not.toContain('TEST_ONLY_NOT_A_REAL_KEY');expect(JSON.stringify(p)).not.toContain('gpt-5.6-sol');
    expect(r.headers.get('cache-control')).toBe('no-store');expect(fetchMock).not.toHaveBeenCalled();expect(mocks.db).not.toHaveBeenCalled();
  });
- it('cron route is hard-paused before loading model or DB code',()=>{\n   const source=readFileSync('src/app/api/cron/daily-content/route.ts','utf8');\n   expect(source).not.toContain('runDailyContent');expect(source).toContain("status:'paused'");expect(source).toContain('openAIDailyGeneration:false');\n });\n it('sanitized usage never copies provider text or secrets',()=>{
+ it('cron route is hard-paused before loading model or DB code',()=>{
+   const source=readFileSync('src/app/api/cron/daily-content/route.ts','utf8');
+   expect(source).not.toContain('runDailyContent');expect(source).toContain("status:'paused'");expect(source).toContain('openAIDailyGeneration:false');
+ });
+ it('sanitized usage never copies provider text or secrets',()=>{
    const usage=dailyUsage({...body(),privateKey:'DO_NOT_LOG',input:'DO_NOT_LOG'});
    expect(usage).toMatchObject({inputTokens:1000,cacheWriteTokens:500,webToolCalls:1,searchActions:1});
    expect(JSON.stringify(usage)).not.toContain('DO_NOT_LOG');expect(dailyUsage({usage:{input_tokens:-1}}).inputTokens).toBeNull();
